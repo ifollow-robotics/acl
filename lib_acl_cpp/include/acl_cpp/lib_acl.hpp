@@ -28,6 +28,8 @@
 #include "stdlib/thread.hpp"
 #include "stdlib/thread_pool.hpp"
 #include "stdlib/thread_queue.hpp"
+#include "stdlib/tbox.hpp"
+#include "stdlib/tbox_array.hpp"
 #include "stdlib/thread_mutex.hpp"
 #include "stdlib/thread_cond.hpp"
 #include "stdlib/scan_dir.hpp"
@@ -36,8 +38,13 @@
 #include "stdlib/trigger.hpp"
 #include "stdlib/atomic.hpp"
 #include "stdlib/bitmap.hpp"
+#include "stdlib/diff_object.hpp"
+#include "stdlib/diff_string.hpp"
+#include "stdlib/diff_manager.hpp"
+#include "stdlib/token_tree.hpp"
 
 #include "serialize/gsoner.hpp"
+#include "serialize/gson_helper.ipp"
 
 #include "memcache/memcache.hpp"
 #include "memcache/memcache_pool.hpp"
@@ -94,6 +101,7 @@
 #include "http/http_request_manager.hpp"
 #include "http/websocket.hpp"
 #include "http/WebSocketServlet.hpp"
+#include "http/http_aclient.hpp"
 
 #include "db/query.hpp"
 #include "db/mysql_conf.hpp"
@@ -112,6 +120,8 @@
 #include "db/db_service.hpp"
 #include "db/db_service_mysql.hpp"
 #include "db/db_service_sqlite.hpp"
+#include "db/db_cursor.hpp"
+#include "db/sqlite_cursor.hpp"
 
 #include "hsocket/hspool.hpp"
 #include "hsocket/hsclient.hpp"
@@ -188,6 +198,11 @@
 #include "redis/redis_slot.hpp"
 #include "redis/redis_node.hpp"
 #include "redis/redis_geo.hpp"
+#include "redis/redis_slave.hpp"
+#include "redis/redis_master.hpp"
+#include "redis/redis_sentinel.hpp"
+#include "redis/redis_role.hpp"
+#include "redis/redis_stream.hpp"
 #include "redis/redis.hpp"
 
 #include "disque/disque.hpp"

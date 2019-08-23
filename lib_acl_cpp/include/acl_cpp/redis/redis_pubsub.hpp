@@ -4,6 +4,8 @@
 #include <map>
 #include "redis_command.hpp"
 
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
+
 namespace acl
 {
 
@@ -193,10 +195,14 @@ public:
 
 private:
 	int subop(const char* cmd, const std::vector<const char*>& channels);
+	int subop_result(const char* cmd, const std::vector<const char*>& channels);
 	int subop(const char* cmd, const std::vector<string>& channels);
+	int subop_result(const char* cmd, const std::vector<string>& channels);
 	int check_channel(const redis_result* obj, const char* cmd,
-		const string& channel);
+		const char* channel);
 	int pubsub_numsub(std::map<string, int>& out);
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)

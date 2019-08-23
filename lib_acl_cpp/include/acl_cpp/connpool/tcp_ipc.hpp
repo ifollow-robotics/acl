@@ -1,16 +1,5 @@
-/**
- * Copyright (C) 2017-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Tue 08 Aug 2017 03:09:21 PM CST
- */
-
 #pragma once
+#include "../stdlib/noncopyable.hpp"
 
 namespace acl
 {
@@ -23,7 +12,7 @@ class string;
  * 该类封装了 tcp_manager 管理类，可以动态添加目标服务端地址，同时动态创建与
  * 每一个服务端的连接池
  */
-class ACL_CPP_API tcp_ipc
+class ACL_CPP_API tcp_ipc : public noncopyable
 {
 public:
 	tcp_ipc(void);

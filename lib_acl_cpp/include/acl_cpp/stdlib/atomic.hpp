@@ -12,7 +12,7 @@ void* atomic_cas(void*, void*, void*);
 void* atomic_xchg(void*, void*);
 
 template<typename T>
-class atomic
+class ACL_CPP_API atomic
 {
 public:
 	atomic(T* t)
@@ -38,12 +38,16 @@ public:
 
 protected:
 	void* atomic_;
+
+private:
+	atomic(const atomic&);
 };
 
-class atomic_long : public atomic<long long>
+class ACL_CPP_API atomic_long : public atomic<long long>
 {
 public:
 	atomic_long(long long n = 0);
+	atomic_long(const atomic_long& n);
 
 	~atomic_long(void) {}
 
@@ -57,7 +61,7 @@ public:
 		return n_;
 	}
 
-	long long value(void)
+	long long value(void) const
 	{
 		return n_;
 	}
@@ -65,6 +69,11 @@ public:
 	void operator=(long long n)
 	{
 		set(n);
+	}
+
+	void operator=(const atomic_long& n)
+	{
+		set(n.n_);
 	}
 
 	long long operator++()

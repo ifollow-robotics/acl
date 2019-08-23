@@ -29,38 +29,48 @@
 
 /* acl_readable - see if file descriptor is readable */
 
-#ifdef ACL_UNIX
+#if defined(ACL_HAS_POLL)
+
+# if defined(ACL_WINDOWS)
+static acl_poll_fn __sys_poll = WSAPoll;
+# else
+static acl_poll_fn __sys_poll = poll;
+# endif
 
 int acl_readable(ACL_SOCKET fd)
 {
-	const char *myname = "poll_read_wait";
 	struct pollfd fds;
-	int   delay = 0;
+	int    delay = 0;
 
-	fds.events = POLLIN | POLLHUP | POLLERR;
+	fds.events = POLLIN | POLLPRI;
 	fds.fd = fd;
 
 	acl_set_error(0);
 
 	for (;;) {
-		switch (poll(&fds, 1, delay)) {
+		switch (__sys_poll(&fds, 1, delay)) {
+#ifdef ACL_WINDOWS
+		case SOCKET_ERROR:
+#else
 		case -1:
+#endif
 			if (acl_last_error() == ACL_EINTR)
 				continue;
 
 			acl_msg_error("%s(%d), %s: poll error(%s), fd: %d",
-				__FILE__, __LINE__, myname,
+				__FILE__, __LINE__, __FUNCTION__,
 				acl_last_serror(), (int) fd);
 			return -1;
 		case 0:
 			return 0;
 		default:
-			if (fds.revents & (POLLHUP | POLLERR))
-				return -1;
-			else if ((fds.revents & POLLIN))
+			if ((fds.revents & POLLIN)) {
 				return 1;
-			else
+			} else if (fds.revents & (POLLHUP | POLLERR)) {
+				return 1;
+			} else {
 				return 0;
+			}
 		}
 	}
 }
@@ -69,7 +79,6 @@ int acl_readable(ACL_SOCKET fd)
 
 int acl_readable(ACL_SOCKET fd)
 {
-	const char *myname = "acl_readable";
 	struct timeval tv;
 	fd_set  rfds, xfds;
 	int   errnum;
@@ -79,7 +88,7 @@ int acl_readable(ACL_SOCKET fd)
 	 */
 	if ((unsigned) fd >= FD_SETSIZE)
 		acl_msg_fatal("%s(%d), %s: fd %d does not fit in "
-			"FD_SETSIZE: %d", __FILE__, __LINE__, myname,
+			"FD_SETSIZE: %d", __FILE__, __LINE__, __FUNCTION__,
 			(int) fd, FD_SETSIZE);
 
 	/*
@@ -115,7 +124,7 @@ int acl_readable(ACL_SOCKET fd)
 				continue;
 #endif
 			acl_msg_error("%s(%d), %s: select error(%s), fd: %d",
-				__FILE__, __LINE__, myname,
+				__FILE__, __LINE__, __FUNCTION__,
 				acl_last_serror(), (int) fd);
 			return -1;
 		case 0:

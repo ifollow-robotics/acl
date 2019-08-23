@@ -1,5 +1,7 @@
 #pragma once
 #include "../acl_cpp_define.hpp"
+#include "../stdlib/string.hpp"
+#include "../stdlib/noncopyable.hpp"
 #if defined(_WIN32) || defined(_WIN64)
 #include <WinSock2.h>
 #endif
@@ -8,18 +10,34 @@ namespace acl {
 
 class socket_stream;
 
+enum {
+	OPEN_FLAG_NONE      = 0,
+	OPEN_FLAG_NONBLOCK  = 1,	// 非阻塞模式
+	OPEN_FLAG_REUSEPORT = 1 << 1,	// 端口复用，要求 Linux3.0 以上
+	OPEN_FLAG_EXCLUSIVE = 1 << 2,	// 是否禁止复用地址
+};
+
 /**
  * 服务端监听套接口类，接收客户端连接，并创建客户端流连接对象
  */
-class ACL_CPP_API server_socket
+class ACL_CPP_API server_socket : public noncopyable
 {
 public:
+#if 0
 	/**
 	 * 构造函数，调用本构造函数后需调用类方法 open 来监听指定服务地址
 	 * @param backlog {int} 监听套接口队列长度
 	 * @param block {bool} 是阻塞模式还是非阻塞模式
 	 */
-	server_socket(int backlog = 128, bool block = true);
+	server_socket(int backlog, bool block);
+#endif
+
+	/**
+	 * 构造函数
+	 * @param flag {unsigned} 定义参见 OPEN_FLAG_XXX
+	 * @param backlog {int} 监听套接口队列长度
+	 */
+	server_socket(unsigned flag, int backlog);
 
 	/**
 	 * 构造函数，调用本构造函数后禁止再调用 open 方法
@@ -39,7 +57,8 @@ public:
 	server_socket(int fd);
 #endif
 
-	~server_socket();
+	server_socket(void);
+	~server_socket(void);
 
 	/**
 	 * 开始监听给定服务端地址
@@ -51,26 +70,44 @@ public:
 	bool open(const char* addr);
 
 	/**
+	 * 判断当前监听套接口是否打开着
+	 * @return {bool}
+	 */
+	bool opened(void) const;
+
+	/**
 	 * 关闭已经打开的监听套接口
 	 * @return {bool} 是否正常关闭
 	 */
-	bool close();
+	bool close(void);
+
+	/**
+	 * 将监听套接口从服务监听对象中解绑
+	 * @return {SOCKET} 返回被解绑的句柄
+	 */
+#if defined(_WIN32) || defined(_WIN64)
+	SOCKET unbind(void);
+#else
+	int unbind(void);
+#endif
 
 	/**
 	 * 接收客户端连接并创建客户端连接流
-	 * @param timeout {int} 在阻塞模式下，当该值 > 0 时，采用超时
-	 *  方式接收客户端连接，若在指定时间内未获得客户端连接，则返回 NULL
-	 * @return {socket_stream*} 返回空表示接收失败
+	 * @param timeout {int} 当该值 > 0 时，采用超时方式接收客户端连接，
+	 *  若在指定时间内未获得客户端连接，则返回 NULL
+	 * @param etimed {bool*} 当此指针非 NULL 时，如果因超时导致该函数返回
+	 *  NULL，则此值被置为 true
+	 * @return {socket_stream*} 返回空表示接收失败或超时
 	 */
-	socket_stream* accept(int timeout = 0);
+	socket_stream* accept(int timeout = 0, bool* etimed = NULL);
 
 	/**
 	 * 获得监听的地址
 	 * @return {const char*} 返回值非空指针
 	 */
-	const char* get_addr() const
+	const char* get_addr(void) const
 	{
-		return addr_;
+		return addr_.c_str();
 	}
 
 	/**
@@ -78,9 +115,9 @@ public:
 	 * @return {int}
 	 */
 #if defined(_WIN32) || defined(_WIN64)
-	SOCKET sock_handle() const
+	SOCKET sock_handle(void) const
 #else
-	int sock_handle() const
+	int sock_handle(void) const
 #endif
 	{
 		return fd_;
@@ -95,10 +132,10 @@ public:
 	void set_tcp_defer_accept(int timeout);
 
 private:
-	int   backlog_;
-	bool  block_;
-	bool  unix_sock_;
-	char  addr_[64];
+	int      backlog_;
+	unsigned open_flag_;
+	bool     unix_sock_;
+	string   addr_;
 
 #if defined(_WIN32) || defined(_WIN64)
 	SOCKET fd_;

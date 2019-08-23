@@ -1,7 +1,10 @@
 #pragma once
 #include "../acl_cpp_define.hpp"
+#include "../stdlib/noncopyable.hpp"
 #include "../stream/socket_stream.hpp"
 #include <vector>
+
+#if !defined(ACL_MIME_DISABLE)
 
 struct SMTP_CLIENT;
 
@@ -14,7 +17,7 @@ class mail_message;
 /**
  * SMTP 邮件发送客户端类，可以使用此类对象发送邮件，支持身份认证等功能
  */
-class ACL_CPP_API smtp_client
+class ACL_CPP_API smtp_client : public noncopyable
 {
 public:
 	/**
@@ -217,3 +220,5 @@ private:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_MIME_DISABLE)

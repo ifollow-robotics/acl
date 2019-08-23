@@ -1,15 +1,3 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Tue 27 Jun 2017 10:43:03 AM CST
- */
-
 #include "stdafx.h"
 #include <signal.h>
 #include "master/master_params.h"
@@ -17,6 +5,8 @@
 #include "manage/http_client.h"
 #include "type_defs.h"
 #include "service_reload.h"
+
+#define CMD	"reload"
 
 service_reload::service_reload(http_client& client)
 : client_(client)
@@ -37,7 +27,7 @@ bool service_reload::run(acl::json& json)
 		reload_res_t res;
 		res.status = 400;
 		res.msg    = "invalid json";
-		client_.reply<reload_res_t>(res.status, res);
+		client_.reply<reload_res_t>(res.status, CMD, res);
 
 		delete this;
 		return false;
@@ -178,7 +168,7 @@ void service_reload::reload_finish(void)
 		acl_master_callback_clean(it->first.c_str());
 	}
 
-	client_.reply<reload_res_t>(res_.status, res_);
+	client_.reply<reload_res_t>(res_.status, CMD, res_);
 	client_.on_finish();
 
 	delete this;

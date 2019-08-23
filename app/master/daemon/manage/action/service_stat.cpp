@@ -1,19 +1,9 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Fri 16 Jun 2017 01:54:45 PM CST
- */
-
 #include "stdafx.h"
 #include "master/master_api.h"
 #include "manage/http_client.h"
 #include "service_stat.h"
+
+#define	CMD	"stat"
 
 bool service_stat::stat_one(const char* path, serv_info_t& info)
 {
@@ -36,6 +26,12 @@ bool service_stat::stat_one(const char* path, serv_info_t& info)
 	info.proc_avail      = serv->avail_proc;
 	info.throttle_delay  = serv->throttle_delay;
 	info.listen_fd_count = serv->listen_fd_count;
+	info.check_fds       = serv->check_fds ? true : false;
+	info.check_mem       = serv->check_mem ? true : false;
+	info.check_cpu       = serv->check_cpu ? true : false;
+	info.check_io        = serv->check_io ? true : false;
+	info.check_net       = serv->check_net ? true : false;
+	info.check_limits    = serv->check_limits ? true : false;
 
 	if (serv->owner && *serv->owner)
 		info.owner = serv->owner;
@@ -44,12 +40,13 @@ bool service_stat::stat_one(const char* path, serv_info_t& info)
 	if (serv->notify_recipients && *serv->notify_recipients)
 		info.notify_recipients = serv->notify_recipients;
 
+	info.version = serv->version;
+
 	ACL_ITER iter;
 	acl_foreach(iter, serv->children_env) {
 		ACL_MASTER_NV* v = (ACL_MASTER_NV *) iter.data;
 		info.env[v->name] = v->value;
 	}
-
 
 	ACL_RING_ITER iter2;
 	acl_ring_foreach(iter2, &serv->children) {
@@ -73,7 +70,7 @@ bool service_stat::run(acl::json& json)
 	if (deserialize<stat_req_t>(json, req) == false) {
 		res.status = 400;
 		res.msg    = "invalid json";
-		client_.reply<stat_res_t>(res.status, res);
+		client_.reply<stat_res_t>(res.status, CMD, res);
 		return false;
 	}
 
@@ -103,7 +100,7 @@ bool service_stat::handle(const stat_req_t& req, stat_res_t& res)
 			(int) n, (int) req.data.size());
 	}
 
-	client_.reply<stat_res_t>(res.status, res);
+	client_.reply<stat_res_t>(res.status, CMD, res, false);
 	client_.on_finish();
 
 	return true;

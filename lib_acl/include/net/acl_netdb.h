@@ -8,14 +8,15 @@
 #endif
 
 #include "../stdlib/acl_array.h"
+#include "acl_sane_inet.h"
 
 /**
  * 主机地址结构
  */
 typedef struct ACL_HOSTNAME ACL_HOST_INFO;
 typedef struct ACL_HOSTNAME {
-	char  ip[64];                   /**< the ip addr of the HOST */
-	struct sockaddr_in saddr;	/**< ip addr in sockaddr_in */
+	char   ip[64];                  /**< the ip addr of the HOST */
+	ACL_SOCKADDR saddr;		/**< ip addr in ACL_SOCKADDR */
 	unsigned int ttl;               /**< the HOST's ip timeout(second) */
 	int   hport;
 	unsigned int nrefer;            /**< refer number to this HOST */
@@ -28,19 +29,20 @@ typedef struct ACL_DNS_DB {
 	ACL_ARRAY *h_db;
 	int   size;
 	char  name[256];
+	ACL_SOCKADDR ns_addr;
 
 	/* for acl_iterator */
 
 	/* 取迭代器头函数 */
-	const ACL_HOST_INFO *(*iter_head)(ACL_ITER*, struct ACL_DNS_DB*);
+	const ACL_HOSTNAME *(*iter_head)(ACL_ITER*, struct ACL_DNS_DB*);
 	/* 取迭代器下一个函数 */
-	const ACL_HOST_INFO *(*iter_next)(ACL_ITER*, struct ACL_DNS_DB*);
+	const ACL_HOSTNAME *(*iter_next)(ACL_ITER*, struct ACL_DNS_DB*);
 	/* 取迭代器尾函数 */
-	const ACL_HOST_INFO *(*iter_tail)(ACL_ITER*, struct ACL_DNS_DB*);
+	const ACL_HOSTNAME *(*iter_tail)(ACL_ITER*, struct ACL_DNS_DB*);
 	/* 取迭代器上一个函数 */
-	const ACL_HOST_INFO *(*iter_prev)(ACL_ITER*, struct ACL_DNS_DB*);
+	const ACL_HOSTNAME *(*iter_prev)(ACL_ITER*, struct ACL_DNS_DB*);
 	/* 取迭代器关联的当前容器成员结构对象 */
-	const ACL_HOST_INFO *(*iter_info)(ACL_ITER*, struct ACL_DNS_DB*);
+	const ACL_HOSTNAME *(*iter_info)(ACL_ITER*, struct ACL_DNS_DB*);
 } ACL_DNS_DB;
 
 /* in acl_netdb.c */
@@ -57,9 +59,9 @@ ACL_API const ACL_HOSTNAME *acl_netdb_index(const ACL_DNS_DB *h_dns_db, int i);
  * 从结果集中取得某个下标位置的主机IP地址
  * @param h_dns_db {const ACL_DNS_DB*} DNS结果集
  * @param i {int} 下标位置
- * @return {const struct sockaddr_in*} IP地址结构, NULL表示失败
+ * @return {const ACL_SOCKADDR*} IP地址结构, NULL表示失败
  */
-ACL_API const struct sockaddr_in *acl_netdb_index_saddr(ACL_DNS_DB *h_dns_db, int i);
+ACL_API const ACL_SOCKADDR *acl_netdb_index_saddr(ACL_DNS_DB *h_dns_db, int i);
 
 /**
  * 将结果集中的对应某个下标的主机地址引用增加
@@ -110,6 +112,13 @@ ACL_API void acl_netdb_free(ACL_DNS_DB *h_dns_db);
  * @return {ACL_DNS_DB*} 创建的结果集对象
  */
 ACL_API ACL_DNS_DB *acl_netdb_new(const char *domain);
+
+/**
+ * 设置该 DNS 查询对象所绑定的 DNS 服务器地址
+ * @param db {ACL_DNS_DB*} 由 acl_netdb_new 或 acl_netdb_clone 创建
+ * @param sa {ACL_SOCKADDR*} DNS 服务器地址
+ */
+ACL_API void acl_netdb_set_ns(ACL_DNS_DB *db, ACL_SOCKADDR *sa);
 
 /**
  * 向结果集中添加IP地址

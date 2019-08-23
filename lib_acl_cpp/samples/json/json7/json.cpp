@@ -37,12 +37,12 @@ int main(void)
 
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
-	s = "{\"name1\": \"value1\", \"name2\": 111111, \"name3\": true, "
-		"[100, 101, 102], [true, false, true], "
-		"[\"name11\": \"value11\", \"name12\": 1000, \"name13\": true], "
-		"[\"node1\": {\"name12_1_1\": \"value12_1_1\"}, "
-		 "\"node2\": {\"name12_1_2\": \"value12_1_2\"}, "
-		 "{\"name12_1_3\": \"value12_1_3\"}]}";
+	s = "{\"name1\":\"value1\",\"name2\":111111,\"name3\":true,"
+		"[100,101,102],[true,false,true],"
+		"[\"name11\":\"value11\",\"name12\":1000,\"name13\":true],"
+		"[\"node1\":{\"name12_1_1\":\"value12_1_1\"},"
+		 "\"node2\":{\"name12_1_2\":\"value12_1_2\"},"
+		 "{\"name12_1_3\":\"value12_1_3\"}]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -58,36 +58,36 @@ int main(void)
 	acl::json_node& array = json.create_array();
 	json.get_root().add_child("array", array);
 
-	acl::json_node& node = json.create_node();
-	node.add_number("number11", 100);
-	node.add_number("number12", 200);
-	node.add_number("number13", 300);
-	array.add_child(node);
+	acl::json_node& node1 = json.create_node();
+	node1.add_number("number11", 100);
+	node1.add_number("number12", 200);
+	node1.add_number("number13", 300);
+	array.add_child(node1);
 
-	node = json.create_node();
-	node.add_number("number21", 1000)
+	acl::json_node& node2 = json.create_node();
+	node2.add_number("number21", 1000)
 		.add_number("number22", 2000)
 		.add_number("number23", 3000);
-	array.add_child(node);
+	array.add_child(node2);
 
-	node = json.create_node();
-	node.add_text("number31", "value31")
+	acl::json_node& node3 = json.create_node();
+	node3.add_text("number31", "value31")
 		.add_text("number32", "value32")
 		.add_text("number33", "value33");
-	array.add_child(node);
+	array.add_child(node3);
 
-	node = json.create_node();
-	node.add_bool("number41", true).add_bool("number42", false);
-	array.add_child(node);
+	acl::json_node& node4 = json.create_node();
+	node4.add_bool("number41", true).add_bool("number42", false);
+	array.add_child(node4);
 
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
 
-	s = "{\"array\": ["
-	  "{\"number11\": 100, \"number12\": 200, \"number13\": 300}, "
-	  "{\"number21\": 1000, \"number22\": 2000, \"number23\": 3000}, "
-	  "{\"number31\": \"value31\", \"number32\": \"value32\", \"number33\": \"value33\"}, "
-	  "{\"number41\": true, \"number42\": false}]}";
+	s = "{\"array\":["
+	  "{\"number11\":100,\"number12\":200,\"number13\":300},"
+	  "{\"number21\":1000,\"number22\":2000,\"number23\":3000},"
+	  "{\"number31\":\"value31\",\"number32\":\"value32\",\"number33\":\"value33\"},"
+	  "{\"number41\":true,\"number42\":false}]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -140,7 +140,7 @@ int main(void)
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
 
-	s = "{[10, 100, 1000]}";
+	s = "{[10,100,1000]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -160,7 +160,7 @@ int main(void)
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
 	
-	s = "{[\"hello\", \"world\"]}";
+	s = "{[\"hello\",\"world\"]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -227,7 +227,7 @@ int main(void)
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
 
-	s = "{[{\"hello\": \"world\"}]}";
+	s = "{[{\"hello\":\"world\"}]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -249,7 +249,7 @@ int main(void)
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
 	
-	s = "{[{}, {}]}";
+	s = "{[{},{}]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -274,7 +274,7 @@ int main(void)
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
 	
-	s = "{[\"hello\", \"world\", [[[]]], {}, {}]}";
+	s = "{[\"hello\",\"world\",[[[]]],{},{}]}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);
@@ -291,7 +291,7 @@ int main(void)
 	json.get_root().add_text("name", "value");
 	json.build_json(buf);
 	printf("%s\r\n", buf.c_str());
-	s = "{\"name\": \"value\"}";
+	s = "{\"name\":\"value\"}";
 	if (strcmp(s, buf.c_str()) != 0)
 	{
 		printf("%s\r\n", s);

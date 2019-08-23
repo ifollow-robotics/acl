@@ -1,19 +1,9 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Fri 16 Jun 2017 10:48:20 AM CST
- */
-
 #include "stdafx.h"
 #include "master/master_params.h"
 #include "manage/http_client.h"
 #include "service_master_config.h"
+
+#define	CMD	"master_config"
 
 bool service_master_config::run(acl::json& json)
 {
@@ -23,7 +13,7 @@ bool service_master_config::run(acl::json& json)
 	if (deserialize<master_config_req_t>(json, req) == false) {
 		res.status = 400;
 		res.msg    = "invalid json";
-		client_.reply<master_config_res_t>(res.status, res);
+		client_.reply<master_config_res_t>(res.status, CMD, res);
 		return false;
 	}
 
@@ -48,7 +38,7 @@ bool service_master_config::run(acl::json& json)
 	res.data[ACL_VAR_MASTER_START_TIMEO] =
 		acl::string::parse_int(acl_var_master_start_timeo);
 
-	client_.reply<master_config_res_t>(res.status, res);
+	client_.reply<master_config_res_t>(res.status, CMD, res, false);
 	client_.on_finish();
 
 	return true;

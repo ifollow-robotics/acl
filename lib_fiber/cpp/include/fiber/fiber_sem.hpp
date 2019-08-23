@@ -1,10 +1,13 @@
 #pragma once
+#include "fiber_cpp_define.hpp"
+#include <list>
+#include <assert.h>
 
 struct ACL_FIBER_SEM;
 
 namespace acl {
 
-class fiber_sem
+class FIBER_CPP_API fiber_sem : public noncopyable
 {
 public:
 	fiber_sem(int max);
@@ -20,7 +23,7 @@ private:
 	const fiber_sem& operator=(const fiber_sem&);
 };
 
-class fiber_sem_guard
+class FIBER_CPP_API fiber_sem_guard : public noncopyable
 {
 public:
 	fiber_sem_guard(fiber_sem& sem) : sem_(sem)
@@ -35,6 +38,66 @@ public:
 
 private:
 	fiber_sem& sem_;
+};
+
+template<typename T>
+class fiber_sbox : public noncopyable
+{
+public:
+	fiber_sbox(bool free_obj = true)
+	: sem_(0), size_(0), free_obj_(free_obj) {}
+
+	~fiber_sbox(void) { clear(free_obj_); }
+
+	void clear(bool free_obj = false)
+	{
+		if (free_obj) {
+			for (typename std::list<T*>::iterator it =
+				sbox_.begin(); it != sbox_.end(); ++it) {
+
+				delete *it;
+			}
+		}
+		sbox_.clear();
+	}
+
+	void push(T* t)
+	{
+		sbox_.push_back(t);
+		sem_.post();
+	}
+
+	T* pop(bool* found = NULL)
+	{
+		sem_.wait();
+		bool found_flag;
+		T* t = peek(found_flag);
+		assert(found_flag);
+		if (found) {
+			*found = true;
+		}
+		return t;
+	}
+
+private:
+	fiber_sem     sem_;
+	std::list<T*> sbox_;
+	size_t        size_;
+	bool          free_obj_;
+
+	T* peek(bool& found_flag)
+	{
+		typename std::list<T*>::iterator it = sbox_.begin();
+		if (it == sbox_.end()) {
+			found_flag = false;
+			return NULL;
+		}
+		found_flag = true;
+		size_--;
+		T* t = *it;
+		sbox_.erase(it);
+		return t;
+	}
 };
 
 } // namespace acl

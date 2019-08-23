@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#if !defined(_WIN32) && !defined(_WIN64)
 #include <unistd.h>
-#include "fiber/lib_fiber.h"
+#endif
+#include "fiber/libfiber.h"
 #include "stamp.h"
 
 static int __max_loop = 1000;
@@ -123,5 +125,9 @@ int main(int argc, char *argv[])
 
 	acl_myfree(tids);
 
+#if defined(_WIN32) || defined(_WIN64)
+	printf("enter any key to exit ..."); fflush(stdout);
+	getchar();
+#endif
 	return 0;
 }

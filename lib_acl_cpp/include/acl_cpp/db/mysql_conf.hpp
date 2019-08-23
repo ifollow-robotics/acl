@@ -1,6 +1,8 @@
 #pragma once
 #include "../acl_cpp_define.hpp"
 
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_DB_DISABLE)
+
 namespace acl {
 
 class ACL_CPP_API mysql_conf
@@ -149,3 +151,5 @@ private:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_DB_DISABLE)

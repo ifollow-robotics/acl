@@ -36,7 +36,7 @@ static void serialize(void)
 // 反序列化过程
 static void deserialize(void)
 {
-	const char *s = "{\"shcool\": \"山东工业大学\", \"class_name\": \"热处理专业\", \"province_name\": \"山东省\", \"position\": \"山东省\", \"name\": \"zsxxsz\", \"age\": 11, \"male\": true, \"ages\": [1, 2, 3, 4, 5] }";
+	const char *s = "{\"shcool\": \"山东工业大学\", \"class_name\": \"热处理专业\", \"province_name\": \"山东省\", \"position\": \"山东省\", \"name\": \"zsxxsz\", \"nicks\": [\"\", \"大仙\"], \"age\": 11, \"male\": true, \"ages\": [1, 2, 3, 4, 5] }";
 	printf("deserialize:\r\n");
 
 	acl::json json;
@@ -48,15 +48,25 @@ static void deserialize(void)
 
 	// 如果转换失败，则打印转换失败原因
 	if (ret.first == false)
+	{
 		printf("error: %s\r\n", ret.second.c_str());
+		exit (1);
+	}
 	else
 	{
+		printf(">>> %s:\r\n", __FUNCTION__);
 		printf("name: %s, age: %d, male: %s\r\n",
 			u.name.c_str(), u.age, u.male ? "yes" : "no");
 		printf("province_name: %s, position: %s\r\n",
 			u.province_name.c_str(), u.position.c_str());
 		printf("shcool: %s, class_name: %s\r\n",
 			u.shcool.c_str(), u.class_name.c_str());
+		for (std::vector<std::string>::const_iterator cit = u.nicks.begin();
+			cit != u.nicks.end(); ++cit)
+		{
+
+			printf("nick: %s\r\n", (*cit).c_str());
+		}
 	}
 }
 
@@ -70,9 +80,11 @@ static void test1(void)
 	} obj;
 
 	struct user_male* m = new struct user_male;
-	(*m).favorite = "pingpang";
+	(*m).favorite = "";
 	(*m).height = 170;
-	(*m).name = "zsxxsz";
+	(*m).name = "";
+	(*m).nicks.push_back("");
+	(*m).nicks.push_back("大仙");
 	(*m).age = 11;
 	(*m).male = true;
 
@@ -132,8 +144,22 @@ static void test2(void)
 	printf("\r\n");
 }
 
+static void test3(void)
+{
+	const char* s = "{\"status\":200,\"msg\":\"ok\",\"disk\":\"/data\",\"files\":[]}";
+
+	acl::json json(s);
+	files_outdate files;
+	if (acl::deserialize<files_outdate>(json, files)) {
+		printf("ok, files size=%lu\r\n", (unsigned long) files.files.size());
+	} else {
+		printf("parse error\r\n");
+	}
+}
+
 int main(void)
 {
+	test1(); exit(0);
 	printf("------------------------serialize----------------------\r\n");
 	serialize();
 
@@ -145,6 +171,9 @@ int main(void)
 
 	printf("------------------------test2--------------------------\r\n");
 	test2();
+
+	printf("------------------------test3--------------------------\r\n");
+	test3();
 
 	printf("Enter any key to continue ..."); fflush(stdout); getchar();
 	return 0;

@@ -1,15 +1,3 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Wed 14 Jun 2017 12:23:36 PM CST
- */
-
 #include "stdafx.h"
 #include "action/service_list.h"
 #include "action/service_stat.h"
@@ -127,7 +115,8 @@ int http_client::on_body(int status, char *data, int dlen, void *ctx)
 	return 0;
 }
 
-void http_client::do_reply(int status, const acl::string& body)
+void http_client::do_reply(int status, const char* cmd,
+	const acl::string& body, bool save)
 {
 	HTTP_HDR_RES* hdr_res = http_hdr_res_static(status);
 	http_hdr_set_keepalive(hdr_req_, hdr_res);
@@ -139,7 +128,14 @@ void http_client::do_reply(int status, const acl::string& body)
 	http_hdr_res_free(hdr_res);
 	buf.append(body);
 
-	logger(">>reply: [%s]\r\n", buf.c_str());
+	if (save) {
+		// logger the important command's information
+		acl::string reqhdr;
+		http_hdr_sprint(reqhdr.vstring(), &hdr_req_->hdr, cmd);
+		logger("cmd=[%s]:\r\n[%s\r\n%s]\r\n\r\n[%s]\r\n", cmd,
+			reqhdr.c_str(), json_.to_string().c_str(), buf.c_str());
+	}
+
 	acl_aio_writen(conn_, buf.c_str(), (int) buf.size());
 }
 
@@ -147,17 +143,17 @@ static struct {
 	const char* cmd;
 	bool (http_client::*handler)(void);
 } handlers[] = {
-	{ "list",		&http_client::handle_list		},
-	{ "stat",		&http_client::handle_stat		},
-	{ "start",		&http_client::handle_start		},
-	{ "kill",		&http_client::handle_kill		},
-	{ "stop",		&http_client::handle_stop		},
-	{ "restart",		&http_client::handle_restart		},
-	{ "reload",		&http_client::handle_reload		},
+	{ "list",	&http_client::handle_list		 },
+	{ "stat",	&http_client::handle_stat		 },
+	{ "start",	&http_client::handle_start		 },
+	{ "kill",	&http_client::handle_kill		 },
+	{ "stop",	&http_client::handle_stop		 },
+	{ "restart",	&http_client::handle_restart		 },
+	{ "reload",	&http_client::handle_reload		 },
 
-	{ "master_config",	&http_client::handle_master_config	},
+	{ "master_config",&http_client::handle_master_config	 },
 
-	{ 0,			0					}
+	{ 0,		0					 }
 };
 
 bool http_client::handle(void)
@@ -166,7 +162,7 @@ bool http_client::handle(void)
 	if (cmd == NULL || *cmd == 0) {
 		//logger_error("cmd null");
 		acl::string dummy;
-		do_reply(400, dummy);
+		do_reply(400, "none", dummy, false);
 		if (hdr_req_->hdr.keep_alive)
 			wait();
 		else
@@ -186,7 +182,7 @@ bool http_client::handle(void)
 	if (handlers[i].handler == NULL) {
 		logger_warn("invalid cmd=%s", cmd);
 		acl::string dummy;
-		do_reply(400, dummy);
+		do_reply(400, "unknown", dummy, false);
 		if (hdr_req_->hdr.keep_alive)
 			wait();
 		else

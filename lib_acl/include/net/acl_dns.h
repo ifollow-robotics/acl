@@ -14,6 +14,7 @@ extern "C" {
 #endif
 #include "../event/acl_events.h"
 #include "../aio/acl_aio.h"
+#include "acl_sane_inet.h"
 #include "acl_netdb.h"
 
 /* DNS 查询时的错误码定义 */
@@ -38,7 +39,7 @@ extern "C" {
 typedef struct ACL_DNS_ADDR {
 	char  ip[64];			/* DNS 服务器地址 */
 	unsigned short port;		/* DNS 服务器端口 */
-	struct sockaddr_in addr;	/* DNS 地址 */
+	ACL_SOCKADDR   addr;		/* DNS 地址 */
 	int   addr_len;			/* addr 大小 */
 	int   mask_length;		/* DNS 服务器所在网络的掩码长度(> 0 && < 32) */
 	struct in_addr in;		/* addr 的网段地址 */
@@ -51,7 +52,7 @@ typedef struct ACL_DNS {
 
 	ACL_ARRAY *groups;		/* 域名组列表 */
 	ACL_ARRAY *dns_list;		/* DNS 服务器地址列表 */
-	int   dns_idx;			/* 当前使用的 dns_list 数组下标 */
+	unsigned   dns_idx;		/* 当前使用的 dns_list 数组下标 */
 	ACL_DNS_ADDR addr_from;		/* 来源 DNS 地址 */
 	ACL_HTABLE *lookup_table;	/* 查询对象表 */
 	ACL_CACHE2 *dns_cache;		/* 用于缓存DNS查询结果 */
@@ -100,6 +101,42 @@ ACL_API void acl_dns_open_cache(ACL_DNS *dns, int limit);
  */
 ACL_API void acl_dns_add_dns(ACL_DNS *dns, const char *dns_ip,
 	unsigned short dns_port, int mask_length);
+
+/**
+ * 清除 DNS 服务器地址列表
+ * @param dns {ACL_DNS*} DNS异步查询句柄
+ */
+ACL_API void acl_dns_clear_dns(ACL_DNS *dns);
+
+/**
+ * 获得 DNS 对象数组列表
+ * @param dns {ACL_DNS*} DNS异步查询句柄
+ * @return {ACL_ARRAY*} 容纳 ACL_DNS_ADDR 对象的数组对象，返回值永远非 NULL
+ */
+ACL_API ACL_ARRAY *acl_dns_list(ACL_DNS *dns);
+
+/**
+ * 获得 DNS 服务器地址列表的数量
+ * @param dns {ACL_DNS*} DNS异步查询句柄
+ * @return {size_t}
+ */
+ACL_API size_t acl_dns_size(ACL_DNS *dns);
+
+/**
+ * 判断 DNS 服务器地址列表是否为空
+ * @param dns {ACL_DNS*} DNS异步查询句柄
+ * @retrn {int} 返回值非 0 表示为空
+ */
+ACL_API int acl_dns_empty(ACL_DNS *dns);
+
+/**
+ * 删除一个DNS服务器地址
+ * @param dns {ACL_DNS*} DNS异步查询句柄
+ * @param dns_ip {const char*} DNS服务器IP地址
+ * @param dns_port {unsigned short} DNS服务器端口
+ */
+ACL_API void acl_dns_del_dns(ACL_DNS *dns, const char *ip, unsigned short port);
+
 /**
  * 关闭异步查询句柄同时释放所有资源
  * @param dns {ACL_DNS*} DNS异步查询句柄
@@ -138,7 +175,7 @@ ACL_API void acl_dns_set_retry_limit(ACL_DNS *dns, int retry_limit);
  * @return {ACL_DNS_REQ*} 返回本次DNS查询的事件对象, 若为NULL则表示出错
  */
 ACL_API ACL_DNS_REQ *acl_dns_lookup(ACL_DNS *dns, const char *domain,
-	void (*callback)(ACL_DNS_DB *, void *, int), void *ctx);
+	void (*callback)(ACL_DNS_DB*, void*, int), void *ctx);
 
 /**
  * 向DNS查询对象中添加静态主机信息

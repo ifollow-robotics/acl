@@ -76,6 +76,9 @@
     <ClCompile Include="src\http\http_service.cpp">
       <Filter>Source Files\http</Filter>
     </ClCompile>
+    <ClCompile Include="src\http\http_aclient.cpp">
+      <Filter>Source Files\http</Filter>
+    </ClCompile>
     <ClCompile Include="src\http\http_client.cpp">
       <Filter>Source Files\http</Filter>
     </ClCompile>
@@ -134,6 +137,15 @@
       <Filter>Source Files\stdlib</Filter>
     </ClCompile>
     <ClCompile Include="src\stdlib\dns_service.cpp">
+      <Filter>Source Files\stdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdlib\diff_manager.cpp">
+      <Filter>Source Files\stdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdlib\diff_object.cpp">
+      <Filter>Source Files\stdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stdlib\diff_string.cpp">
       <Filter>Source Files\stdlib</Filter>
     </ClCompile>
     <ClCompile Include="src\stdlib\locker.cpp">
@@ -439,6 +451,9 @@
     <ClCompile Include="src\redis\redis_result.cpp">
       <Filter>Source Files\redis</Filter>
     </ClCompile>
+    <ClCompile Include="src\redis\redis_role.cpp">
+      <Filter>Source Files\redis</Filter>
+    </ClCompile>
     <ClCompile Include="src\redis\redis_client.cpp">
       <Filter>Source Files\redis</Filter>
     </ClCompile>
@@ -452,6 +467,9 @@
       <Filter>Source Files\redis</Filter>
     </ClCompile>
     <ClCompile Include="src\redis\redis_string.cpp">
+      <Filter>Source Files\redis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\redis\redis_stream.cpp">
       <Filter>Source Files\redis</Filter>
     </ClCompile>
     <ClCompile Include="src\redis\redis_connection.cpp">
@@ -523,6 +541,9 @@
     <ClCompile Include="src\stdlib\thread_queue.cpp">
       <Filter>Source Files\stdlib</Filter>
     </ClCompile>
+    <ClCompile Include="src\stdlib\token_tree.cpp">
+      <Filter>Source Files\stdlib</Filter>
+    </ClCompile>
     <ClCompile Include="src\redis\redis_geo.cpp">
       <Filter>Source Files\redis</Filter>
     </ClCompile>
@@ -567,6 +588,21 @@
     </ClCompile>
     <ClCompile Include="src\serialize\gsoner.cpp">
       <Filter>Source Files\serialize</Filter>
+    </ClCompile>
+    <ClCompile Include="src\redis\redis_role.cpp">
+      <Filter>Source Files\redis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\redis\redis_sentinel.cpp">
+      <Filter>Source Files\redis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\redis\redis_slave.cpp">
+      <Filter>Source Files\redis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\redis\redis_master.cpp">
+      <Filter>Source Files\redis</Filter>
+    </ClCompile>
+    <ClCompile Include="src\db\sqlite_cursor.cpp">
+      <Filter>Source Files\db</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -652,6 +688,9 @@
       <Filter>Header Files\hsocket</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\http\HttpSession.hpp">
+      <Filter>Header Files\http</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\http\http_aclient.hpp">
       <Filter>Header Files\http</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\http\http_client.hpp">
@@ -796,6 +835,15 @@
       <Filter>Header Files\stdlib</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\stdlib\dns_service.hpp">
+      <Filter>Header Files\stdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\stdlib\diff_manager.hpp">
+      <Filter>Header Files\stdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\stdlib\diff_object.hpp">
+      <Filter>Header Files\stdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\stdlib\diff_string.hpp">
       <Filter>Header Files\stdlib</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\stdlib\escape.hpp">
@@ -945,9 +993,6 @@
     <ClInclude Include="include\acl_cpp\connpool\connect_pool.hpp">
       <Filter>Header Files\connpool</Filter>
     </ClInclude>
-    <ClInclude Include="include\acl_cpp\connpool\tcp_readder.hpp">
-      <Filter>Header Files\connpool</Filter>
-    </ClInclude>
     <ClInclude Include="include\acl_cpp\connpool\tcp_reader.hpp">
       <Filter>Header Files\connpool</Filter>
     </ClInclude>
@@ -983,6 +1028,9 @@
     </ClInclude>
     <ClInclude Include="include\acl_cpp\master\master_udp.hpp">
       <Filter>Header Files\master</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\stdlib\tbox.hpp">
+      <Filter>Header Files\stdlib</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\stdlib\thread.hpp">
       <Filter>Header Files\stdlib</Filter>
@@ -1044,6 +1092,9 @@
     <ClInclude Include="include\acl_cpp\redis\redis_result.hpp">
       <Filter>Header Files\redis</Filter>
     </ClInclude>
+    <ClInclude Include="include\acl_cpp\redis\redis_role.hpp">
+      <Filter>Header Files\redis</Filter>
+    </ClInclude>
     <ClInclude Include="include\acl_cpp\redis\redis_hash.hpp">
       <Filter>Header Files\redis</Filter>
     </ClInclude>
@@ -1054,6 +1105,9 @@
       <Filter>Header Files\redis</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\redis\redis_string.hpp">
+      <Filter>Header Files\redis</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\redis\redis_stream.hpp">
       <Filter>Header Files\redis</Filter>
     </ClInclude>
     <ClInclude Include="include\acl_cpp\redis\redis_connection.hpp">
@@ -1128,6 +1182,9 @@
     <ClInclude Include="include\acl_cpp\stdlib\thread_queue.hpp">
       <Filter>Header Files\stdlib</Filter>
     </ClInclude>
+    <ClInclude Include="include\acl_cpp\stdlib\token_tree.hpp">
+      <Filter>Header Files\stdlib</Filter>
+    </ClInclude>
     <ClInclude Include="include\acl_cpp\redis\redis_geo.hpp">
       <Filter>Header Files\redis</Filter>
     </ClInclude>
@@ -1172,6 +1229,24 @@
     </ClInclude>
     <ClInclude Include="include\acl_cpp\serialize\gsoner.hpp">
       <Filter>Header Files\serialize</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\redis\redis_role.hpp">
+      <Filter>Header Files\redis</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\redis\redis_sentinel.hpp">
+      <Filter>Header Files\redis</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\redis\redis_slave.hpp">
+      <Filter>Header Files\redis</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\redis\redis_master.hpp">
+      <Filter>Header Files\redis</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\db\db_cursor.hpp">
+      <Filter>Header Files\db</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acl_cpp\db\sqlite_cursor.hpp">
+      <Filter>Header Files\db</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

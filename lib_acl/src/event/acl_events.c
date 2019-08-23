@@ -34,6 +34,7 @@ static void event_init(ACL_EVENT *eventp, int fdsize,
 	eventp->fdsize = fdsize;
 	/* eventp->fdtab_free_cnt = 0; */
 	eventp->fdcnt  = 0;
+	eventp->fdpos  = 0;
 	eventp->ready_cnt  = 0;
 	eventp->fdtabs = (ACL_EVENT_FDTABLE **)
 		acl_mycalloc(fdsize,sizeof(ACL_EVENT_FDTABLE *));
@@ -446,4 +447,9 @@ int acl_event_use_thread(ACL_EVENT *eventp)
 int acl_event_mode(ACL_EVENT *eventp)
 {
 	return eventp->event_mode;
+}
+
+int acl_event_last_nready(ACL_EVENT *eventp)
+{
+	return eventp->ready_cnt;
 }

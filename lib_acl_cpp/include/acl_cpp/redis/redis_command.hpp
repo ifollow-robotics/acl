@@ -1,9 +1,12 @@
 #pragma once
 #include "../acl_cpp_define.hpp"
+#include "../stdlib/noncopyable.hpp"
 #include <map>
 #include <list>
 #include <vector>
 #include "redis_result.hpp"
+
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
 
 namespace acl
 {
@@ -17,7 +20,7 @@ class redis_request;
  * the redis command classes's base virtual class, which includes the basic
  * functions for all sub-classes
  */
-class ACL_CPP_API redis_command
+class ACL_CPP_API redis_command : public noncopyable
 {
 public:
 	/**
@@ -313,6 +316,11 @@ public:
 	const redis_result* request(const std::vector<string>& args,
 		size_t nchind = 0);
 
+	const string* request_buf(void) const
+	{
+		return request_buf_;
+	}
+
 protected:
 	const redis_result* run(size_t nchild = 0, int* timeout = NULL);
 	const redis_result* run(redis_client_cluster* cluster,
@@ -362,6 +370,8 @@ protected:
 	void build(const char* cmd, const char* key,
 		const int names[], size_t argc);
 
+	/*******************************************************************/
+
 protected:
 	int get_number(bool* success = NULL);
 	long long int get_number64(bool* success = NULL);
@@ -393,13 +403,12 @@ protected:
 	void hash_slot(const char* key);
 	void hash_slot(const char* key, size_t len);
 
-private:
+protected:
 	bool check_addr_;
 	char addr_[32];
 	redis_client* conn_;
 	redis_client_cluster* cluster_;
 	size_t max_conns_;
-	unsigned long long used_;
 	int  slot_;
 	int  redirect_max_;
 	int  redirect_sleep_;
@@ -410,7 +419,7 @@ private:
 	void set_client_addr(const char* addr);
 	void set_client_addr(redis_client& conn);
 
-private:
+protected:
 	/************************** request ********************************/
 	bool slice_req_;
 	string* request_buf_;
@@ -424,7 +433,7 @@ private:
 	void build_request1(size_t argc, const char* argv[], size_t lens[]);
 	void build_request2(size_t argc, const char* argv[], size_t lens[]);
 
-private:
+protected:
 	/************************** respond ********************************/
 	bool slice_res_;
 	const redis_result* result_;
@@ -433,3 +442,5 @@ private:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)

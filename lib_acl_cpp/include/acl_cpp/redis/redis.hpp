@@ -14,6 +14,9 @@
 #include "redis_zset.hpp"
 #include "redis_cluster.hpp"
 #include "redis_geo.hpp"
+#include "redis_stream.hpp"
+
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
 
 namespace acl
 {
@@ -39,6 +42,7 @@ class ACL_CPP_API redis
 	, public redis_zset
 	, public redis_cluster
 	, public redis_geo
+	, public redis_stream
 {
 public:
 	/**
@@ -66,3 +70,5 @@ public:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)

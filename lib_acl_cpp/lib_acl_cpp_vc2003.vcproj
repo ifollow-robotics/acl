@@ -358,6 +358,15 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\src\stdlib\dns_service.cpp">
 				</File>
 				<File
+					RelativePath=".\src\stdlib\diff_manager.cpp">
+				</File>
+				<File
+					RelativePath=".\src\stdlib\diff_object.cpp">
+				</File>
+				<File
+					RelativePath=".\src\stdlib\diff_string.cpp">
+				</File>
+				<File
 					RelativePath=".\src\stdlib\escape.cpp">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -437,6 +446,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 				</File>
 				<File
 					RelativePath=".\src\stdlib\thread_queue.cpp">
+				</File>
+				<File
+					RelativePath=".\src\stdlib\token_tree.cpp">
 				</File>
 				<File
 					RelativePath=".\src\stdlib\url_coder.cpp">
@@ -631,6 +643,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 				Name="http"
 				Filter="">
 				<File
+					RelativePath=".\src\http\http_aclient.cpp">
+				</File>
+				<File
 					RelativePath=".\src\http\http_client.cpp">
 				</File>
 				<File
@@ -762,6 +777,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\src\db\sqlite_manager.cpp">
 				</File>
 				<File
+					RelativePath=".\src\db\sqlite_cursor.cpp">
+				</File>
+				<File
 					RelativePath=".\src\db\sqlite_pool.cpp">
 				</File>
 			</Filter>
@@ -818,6 +836,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\src\redis\redis_list.cpp">
 				</File>
 				<File
+					RelativePath=".\src\redis\redis_master.cpp">
+				</File>
+				<File
 					RelativePath=".\src\redis\redis_node.cpp">
 				</File>
 				<File
@@ -833,6 +854,12 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\src\redis\redis_result.cpp">
 				</File>
 				<File
+					RelativePath=".\src\redis\redis_role.cpp">
+				</File>
+				<File
+					RelativePath=".\src\redis\redis_sentinel.cpp">
+				</File>
+				<File
 					RelativePath=".\src\redis\redis_script.cpp">
 				</File>
 				<File
@@ -842,10 +869,16 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\src\redis\redis_set.cpp">
 				</File>
 				<File
+					RelativePath=".\src\redis\redis_slave.cpp">
+				</File>
+				<File
 					RelativePath=".\src\redis\redis_slot.cpp">
 				</File>
 				<File
 					RelativePath=".\src\redis\redis_string.cpp">
+				</File>
+				<File
+					RelativePath=".\src\redis\redis_stream.cpp">
 				</File>
 				<File
 					RelativePath=".\src\redis\redis_transaction.cpp">
@@ -1085,6 +1118,15 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\include\acl_cpp\stdlib\dns_service.hpp">
 				</File>
 				<File
+					RelativePath=".\include\acl_cpp\stdlib\diff_manager.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\stdlib\diff_object.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\stdlib\diff_string.hpp">
+				</File>
+				<File
 					RelativePath=".\include\acl_cpp\stdlib\escape.hpp">
 				</File>
 				<File
@@ -1130,6 +1172,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\include\acl_cpp\stdlib\string.hpp">
 				</File>
 				<File
+					RelativePath=".\include\acl_cpp\stdlib\tbox.hpp">
+				</File>
+				<File
 					RelativePath=".\include\acl_cpp\stdlib\thread.hpp">
 				</File>
 				<File
@@ -1143,6 +1188,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\stdlib\thread_queue.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\stdlib\token_tree.hpp">
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\stdlib\trigger.hpp">
@@ -1260,6 +1308,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 				Name="http"
 				Filter="">
 				<File
+					RelativePath=".\include\acl_cpp\http\http_aclient.hpp">
+				</File>
+				<File
 					RelativePath=".\include\acl_cpp\http\http_client.hpp">
 				</File>
 				<File
@@ -1349,6 +1400,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\include\acl_cpp\db\db_handle.hpp">
 				</File>
 				<File
+					RelativePath=".\include\acl_cpp\db\db_cursor.hpp">
+				</File>
+				<File
 					RelativePath=".\include\acl_cpp\db\db_mysql.hpp">
 				</File>
 				<File
@@ -1392,6 +1446,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\db\sqlite_manager.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\db\sqlite_cursor.hpp">
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\db\sqlite_pool.hpp">
@@ -1450,6 +1507,9 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\include\acl_cpp\redis\redis_list.hpp">
 				</File>
 				<File
+					RelativePath=".\include\acl_cpp\redis\redis_master.hpp">
+				</File>
+				<File
 					RelativePath=".\include\acl_cpp\redis\redis_node.hpp">
 				</File>
 				<File
@@ -1457,6 +1517,12 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\redis\redis_result.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\redis\redis_role.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\redis\redis_sentinel.hpp">
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\redis\redis_script.hpp">
@@ -1468,10 +1534,16 @@ copy $(TargetName).pdb ..\dist\lib\win32\$(TargetName).pdb /Y
 					RelativePath=".\include\acl_cpp\redis\redis_set.hpp">
 				</File>
 				<File
+					RelativePath=".\include\acl_cpp\redis\redis_slave.hpp">
+				</File>
+				<File
 					RelativePath=".\include\acl_cpp\redis\redis_slot.hpp">
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\redis\redis_string.hpp">
+				</File>
+				<File
+					RelativePath=".\include\acl_cpp\redis\redis_stream.hpp">
 				</File>
 				<File
 					RelativePath=".\include\acl_cpp\redis\redis_transaction.hpp">

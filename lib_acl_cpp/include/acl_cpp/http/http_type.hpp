@@ -38,6 +38,7 @@ typedef enum
 	HTTP_METHOD_HEAD,       // HEAD 方法
 	HTTP_METHOD_OPTION,     // OPTION 方法
 	HTTP_METHOD_PROPFIND,	// PROPFIND 方法
+	HTTP_METHOD_PATCH,	    // PATCH 方法
 	HTTP_METHOD_OTHER,	// 其它的方法
 } http_method_t;
 
@@ -52,10 +53,10 @@ typedef enum
 	// Content-Type: application/octet-stream
 	HTTP_REQUEST_OCTET_STREAM,
 
-	// Content-Type: text/xml
+	// Content-Type: text/xml 或 application/xml
 	HTTP_REQUEST_TEXT_XML,
 
-	// Content-Type: text/json
+	// Content-Type: text/json 或 application/json
 	HTTP_REQUEST_TEXT_JSON,
 
 	// 其它类型

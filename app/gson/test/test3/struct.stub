@@ -28,6 +28,7 @@ struct province
 struct user : student, province
 {
 	std::string name;
+	std::vector<std::string> nicks;
 	int  age;
 	bool male;
 
@@ -39,7 +40,10 @@ struct user_male : user
 {
 	std::string favorite;
 	int height;
+	// Gson@optional
 	std::vector<int> ages;
+	// Gson@optional
+	std::map<acl::string, acl::string> dummy;
 
 	const char* get_favorite(void) const
 	{
@@ -55,4 +59,20 @@ struct user_female : user
 {
 	std::string favorite;
 	int weigtht;
+};
+
+struct files_outdate
+{
+	int status;
+	acl::string msg;
+	acl::string disk;
+
+	files_outdate(void)
+	{
+		status = 200;
+		msg    = "ok";
+	}
+
+	// @Gson optional
+	std::vector<acl::string> files;
 };

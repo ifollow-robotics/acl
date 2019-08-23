@@ -7,6 +7,8 @@
 #include "acl_cpp/redis/redis_key.hpp"
 #endif
 
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
+
 namespace acl
 {
 
@@ -327,7 +329,7 @@ bool redis_key::rename_key(const char* key, const char* newkey)
 	return check_status();
 }
 
-bool redis_key::renamenx(const char* key, const char* newkey)
+int redis_key::renamenx(const char* key, const char* newkey)
 {
 	const char* argv[3];
 	size_t lens[3];
@@ -342,7 +344,21 @@ bool redis_key::renamenx(const char* key, const char* newkey)
 	lens[2] = strlen(newkey);
 
 	build_request(3, argv, lens);
-	return check_status();
+	const redis_result* result = run();
+	if (result == NULL) {
+		logger_error("result NULL, key=%s, newkey=%s", key, newkey);
+		return -2;
+	}
+
+	if (result->get_type() == REDIS_RESULT_INTEGER)
+		return result->get_integer();
+	else if (result->get_type() == REDIS_RESULT_ERROR)
+		return -1;
+	else {
+		logger_error("invalid type=%d, key=%s, newkey=%s",
+			result->get_type(), key, newkey);
+		return -3;
+	}
 }
 
 bool redis_key::restore(const char* key, const char* value, size_t len,
@@ -366,8 +382,7 @@ bool redis_key::restore(const char* key, const char* value, size_t len,
 	lens[3] = len;
 
 	size_t argc = 4;
-	if (replace)
-	{
+	if (replace) {
 		argv[4] = "REPLACE";
 		lens[4] = sizeof("REPLACE") - 1;
 		argc++;
@@ -428,8 +443,7 @@ redis_key_t redis_key::type(const char* key)
 		return REDIS_KEY_SET;
 	else if (strcasecmp(ptr, "zset") == 0)
 		return REDIS_KEY_ZSET;
-	else
-	{
+	else {
 		logger_error("unknown type: %s, key: %s", ptr, key);
 		return REDIS_KEY_NONE;
 	}
@@ -471,8 +485,7 @@ bool redis_key::migrate(const char* key, const char* addr, unsigned dest_db,
 	argv[5] = timeout_s;
 	lens[5] = strlen(timeout_s);
 
-	if (option && *option)
-	{
+	if (option && *option) {
 		argv[6] = option;
 		lens[6] = strlen(option);
 		argc++;
@@ -576,8 +589,7 @@ int redis_key::scan(int cursor, std::vector<string>& out,
 	// out.clear();
 	out.reserve(out.size() + size);
 
-	for (size_t i = 0; i < size; i++)
-	{
+	for (size_t i = 0; i < size; i++) {
 		rr = children[i];
 		rr->argv_to_string(key_buf);
 		out.push_back(key_buf);
@@ -588,3 +600,5 @@ int redis_key::scan(int cursor, std::vector<string>& out,
 }
 
 } // namespace acl
+
+#endif // ACL_CLIENT_ONLY

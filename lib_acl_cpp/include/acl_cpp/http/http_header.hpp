@@ -5,6 +5,7 @@
 #include "../http/http_type.hpp"
 
 struct HTTP_HDR_RES;
+struct HTTP_HDR_REQ;
 struct HTTP_HDR_ENTRY;
 
 namespace acl {
@@ -48,6 +49,20 @@ public:
 	 */
 	http_header(int status, dbuf_guard* dbuf = NULL);
 
+	/**
+	 * 根据 C语言 的 HTTP 响应头进行构造
+	 * @param hdr_res {const HTTP_HDR_RES&}
+	 * @param dbuf {dbuf_guard*} 非空时将做为内存分配池
+	 */
+	http_header(const HTTP_HDR_RES& hdr_res, dbuf_guard* dbuf = NULL);
+
+	/**
+	 * 根据 C语言 的 HTTP 请求头进行构造
+	 * @param hdr_req {const HTTP_HDR_REQ&}
+	 * @param dbuf {dbuf_guard*} 非空时将做为内存分配池
+	 */
+	http_header(const HTTP_HDR_REQ& hdr_req, dbuf_guard* dbuf = NULL);
+
 	virtual ~http_header(void);
 
 	/**
@@ -70,9 +85,11 @@ public:
 	 * 向 HTTP 头中添加字段
 	 * @param name {const char*} 字段名，非空指针
 	 * @param value {const char*} 字段值，非空指针
+	 * @param replace {bool} 如果存在重复项时是否自动覆盖旧数据
 	 * @return {http_header&} 返回本对象的引用，便于用户连续操作
 	 */
-	http_header& add_entry(const char* name, const char* value);
+	http_header& add_entry(const char* name, const char* value,
+			bool replace = true);
 	
 	/**
 	 * 设置 HTTP 头中的 Content-Length 字段
@@ -187,6 +204,13 @@ public:
 	http_header& add_cookie(const HttpCookie* cookie);
 
 	/**
+	 * 从 HTTP 头中获得对应名称的 cookie 对象
+	 * @param name {const char*} cookie 名
+	 * @return {const HttpCookie*}
+	 */
+	const HttpCookie* get_cookie(const char* name) const;
+
+	/**
 	 * 将整型的日期转换为 rfc1123 字符串格式的日期
 	 */
 	static void date_format(char* out, size_t size, time_t t);
@@ -196,6 +220,13 @@ public:
 	 * @return {bool} 返回 false 表明是 HTTP 响应头
 	 */
 	bool is_request(void) const;
+
+	/**
+	 * 设置标志位，针对 HTTP 请求的 URI 中的 ? 问号被转义(即被转成 %3F)的请求是否
+	 * 做兼容性处理，内部缺省为做兼容性处理
+	 * @param on {bool} 为 true 表示做兼容性处理
+	 */
+	static void uri_unsafe_correct(bool on);
 
 	//////////////////////////////////////////////////////////////////////
 	//                        HTTP 请求方法函数
@@ -299,6 +330,7 @@ public:
 #endif
 
 	http_header& set_ws_origin(const char* url);
+	http_header& set_ws_key(const void* key, size_t len);
 	http_header& set_ws_key(const char* key);
 	http_header& set_ws_protocol(const char* proto);
 	http_header& set_ws_version(int ver);
@@ -376,6 +408,15 @@ public:
 	http_header& set_status(int status);
 
 	/**
+	 * 获得响应头中的 HTTP 状态字
+	 * @return {int} HTTP 响应状态码：1xx, 2xx, 3xx, 4xx, 5xx
+	 */
+	int get_status(void) const
+	{
+		return status_;
+	}
+
+	/**
 	 * 设置 HTTP 响应头中的 chunked 传输标志
 	 * @param on {bool}
 	 * @return {http_header&}
@@ -426,6 +467,7 @@ public:
 private:
 	dbuf_guard* dbuf_internal_;
 	dbuf_guard* dbuf_;
+	bool fixed_;                          // HTTP 是否已经完整了
 	//char* domain_;  // HTTP 服务器域名
 	//unsigned short port_;               // HTTP 服务器端口
 	char* url_;                           // HTTP 请求的 URL
@@ -467,7 +509,9 @@ private:
 	void clear(void);
 	void build_common(string& buf) const; // 构建通用头
 
+	void add_res_cookie(const HTTP_HDR_ENTRY& entry);
 	void append_accept_key(const char* sec_key, string& out) const;
+	unsigned char* create_ws_key(const void* key, size_t len) const;
 };
 
 }  // namespace acl end

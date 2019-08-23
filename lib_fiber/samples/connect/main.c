@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include "lib_acl.h"
-#include "fiber/lib_fiber.h"
+#include "fiber/libfiber.h"
 
 static char __server_ip[64];
 static int  __server_port = 9001;
@@ -16,7 +16,7 @@ static int __total_error_clients   = 0;
 static int __fiber_delay  = 10; 
 static int __max_fibers   = 100;
 static int __left_fibers  = 100;
-static int __stack_size   = 32000;
+static int __stack_size   = 320000;
 
 static void echo_client(int fd)
 {

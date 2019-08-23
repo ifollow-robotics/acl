@@ -1,15 +1,3 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Wed 14 Jun 2017 12:21:44 PM CST
- */
-
 #pragma once
 #include "json/serialize.h"
 
@@ -24,11 +12,11 @@ public:
 
 public:
 	template<typename T>
-	void reply(int status, T& o)
+	void reply(int status, const char* cmd, T& o, bool save = true)
 	{
 		acl::string buf;
 		serialize<T>(o, buf);
-		do_reply(status, buf);
+		do_reply(status, cmd, buf, save);
 		buf.clear();
 	}
 
@@ -58,7 +46,8 @@ public:
 private:
 	void reset(void);
 	bool handle(void);
-	void do_reply(int status, const acl::string& buf);
+	void do_reply(int status, const char* cmd,
+		const acl::string& buf, bool save);
 
 	static int on_head(int status, void* ctx);
 	static int on_body(int status, char* data, int dlen, void* ctx);

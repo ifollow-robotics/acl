@@ -342,7 +342,7 @@ void acl_msg_fatal(const char *fmt,...)
 	va_end (ap);
 	acl_trace_info();
 	acl_close_log();
-	acl_assert(0);
+	abort();
 }
 
 void acl_msg_fatal2(const char *fmt, va_list ap)
@@ -369,7 +369,7 @@ void acl_msg_fatal2(const char *fmt, va_list ap)
 
 	acl_trace_info();
 	acl_close_log();
-	acl_assert(0);
+	abort();
 }
 
 void acl_msg_fatal_status(int status, const char *fmt,...)
@@ -400,7 +400,7 @@ void acl_msg_fatal_status(int status, const char *fmt,...)
 	va_end (ap);
 	acl_trace_info();
 	acl_close_log();
-	acl_assert(0);
+	abort();
 }
 
 void acl_msg_fatal_status2(int status, const char *fmt, va_list ap)
@@ -426,7 +426,7 @@ void acl_msg_fatal_status2(int status, const char *fmt, va_list ap)
 
 	acl_trace_info();
 	acl_close_log();
-	acl_assert(0);
+	abort();
 }
 
 void acl_msg_panic(const char *fmt,...)
@@ -458,7 +458,7 @@ void acl_msg_panic(const char *fmt,...)
 	va_end (ap);
 	acl_trace_info();
 	acl_close_log();
-	acl_assert(0);
+	abort();
 }
 
 void acl_msg_panic2(const char *fmt, va_list ap)
@@ -485,7 +485,7 @@ void acl_msg_panic2(const char *fmt, va_list ap)
 
 	acl_trace_info();
 	acl_close_log();
-	acl_assert(0);
+	abort();
 }
 #endif  /* USE_PRINTF_MACRO */
 
@@ -515,6 +515,9 @@ const char *acl_strerror(unsigned int errnum, char *buffer, int size)
 		buffer[L - 1] = '\0';
 		L--;
 	}
+
+	/* resave the error of WIN SYS */
+	WSASetLastError(errnum);
 #elif	defined(ACL_UNIX)
 	if (buffer == NULL || size <= 0) {
 		acl_msg_error("%s, %s(%d): input error",
@@ -570,7 +573,8 @@ const char *acl_last_serror(void)
 	buf = acl_pthread_getspecific(__errbuf_key);
 	if (buf == NULL) {
 		buf = acl_mymalloc(__buf_size);
-		acl_assert(acl_pthread_setspecific(__errbuf_key, buf) == 0);
+		if (acl_pthread_setspecific(__errbuf_key, buf) != 0)
+			abort();
 		if ((unsigned long) acl_pthread_self()
 			== acl_main_thread_self())
 		{

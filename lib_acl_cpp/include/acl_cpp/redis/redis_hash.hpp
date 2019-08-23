@@ -5,11 +5,12 @@
 #include "../stdlib/string.hpp"
 #include "redis_command.hpp"
 
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
+
 namespace acl
 {
 
 class redis_client;
-class redis_result;
 
 /**
  * redis Hash(哈希表) 类，本类的实现的主要命令：
@@ -360,3 +361,5 @@ public:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)

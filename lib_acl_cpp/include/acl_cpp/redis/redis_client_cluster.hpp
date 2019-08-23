@@ -5,8 +5,12 @@
 #include "../stdlib/string.hpp"
 #include "../connpool/connect_manager.hpp"
 
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
+
 namespace acl
 {
+
+class polarssl_conf;
 
 class redis_client_pool;
 
@@ -133,6 +137,15 @@ public:
 	}
 
 	/**
+	 * 设置 SSL 通信方式下的配置句柄，内部缺省值为 NULL，如果设置了 SSL 连
+	 * 接配置对象，则内部切换成 SSL 通信方式
+	 * set SSL communication with Redis-server if ssl_conf not NULL
+	 * @param ssl_conf {polarssl_conf*}
+	 * @return {redis_client_cluster&}
+	 */
+	redis_client_cluster& set_ssl_conf(polarssl_conf* ssl_conf);
+
+	/**
 	 * 设置某个 redis 服务相应的连接密码
 	 * set the password of one redis-server
 	 * @param addr {const char*} 指定的某 redis 服务器地址，当该参数的值为
@@ -144,6 +157,26 @@ public:
 	 * @return {redis_client_cluster&}
 	 */
 	redis_client_cluster& set_password(const char* addr, const char* pass);
+
+	/**
+	 * 获得 redis 集群中服务节点与连接密码的对照表
+	 * get all passwords of the redis cluster
+	 * @return {const std::map<string, string>&}
+	 */
+	const std::map<string, string>& get_passwords(void) const
+	{
+		return passwds_;
+	}
+
+	/**
+	 * 获得给定地址的 redis 节点的连接密码，返回 NULL 表示未设置
+	 * get the connection password of the specified addr for one redis,
+	 * NULL will be returned if password wasn't set
+	 * @param addr {const char*}
+	 * @return {const char*} return the specified node's connection password,
+	 *  NULL returned if no password been set
+	 */
+	const char* get_password(const char* addr) const;
 
 protected:
 	/**
@@ -167,6 +200,9 @@ private:
 	int redirect_max_;
 	int redirect_sleep_;
 	std::map<string, string> passwds_;
+	polarssl_conf* ssl_conf_;
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)

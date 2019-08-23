@@ -102,29 +102,61 @@ if (${UNIX_OS})
 		"-Wstrict-prototypes"
 	)
 
+	if (CMAKE_COMPILER_IS_GNUCC)
+		execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
+			OUTPUT_VARIABLE GCC_VERSION)
+		string(REGEX MATCHALL "[0-9]+" GCC_VERSION_COMPONENTS ${GCC_VERSION})
+		list(GET GCC_VERSION_COMPONENTS 0 GCC_MAJOR)
+		list(GET GCC_VERSION_COMPONENTS 1 GCC_MINOR)
+
+		if(CMAKE_VERSION GREATER "3.0")
+			if ((GCC_MAJOR GREATER_EQUAL 4) AND (GCC_MINOR GREATER_EQUAL 8))
+				message(STATUS "gcc version major=${GCC_MAJOR}")
+				message(STATUS "gcc version minor=${GCC_MINOR}")
+				add_definitions("-Wno-implicit-fallthrough")
+			endif()
+		endif()
+	endif()
+
 	if (!CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 		add_definitions("-Wno-invalid-source-encoding")
 	endif()
 
 	if (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
-		add_definitions("-O3")
+		add_definitions("-O2")
 	else()
 		add_definitions("-g")
 	endif()
 elseif (${WIN_OS})
 	add_definitions(
 		"-Yc"
+		"-D_WINSOCK_DEPRECATED_NO_WARNINGS"
 		"-DACL_WRITEABLE_CHECK"
 		"-DACL_PREPARE_COMPILE")
 endif()
 
+if (ACL_CLIENT_ONLY MATCHES "YES")
+	add_definitions("-DACL_CLIENT_ONLY")
+	message(STATUS "acl: ACL_CLIENT_ONLY been set")
+endif()
+
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
 	set(CMAKE_SHARED_LINKER_FLAGS "-shared")
+	add_definitions("-DACL_CLIENT_ONLY")
 	add_definitions("-Wno-invalid-source-encoding")
+
+	set(lib_output_path ${PROJECT_BINARY_DIR}/lib)
+	set(LIBRARY_OUTPUT_PATH ${lib_output_path})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${lib_output_path})
+
+	add_library(acl_static STATIC ${lib_src})
+	SET_TARGET_PROPERTIES(acl_static PROPERTIES OUTPUT_NAME "acl")
+	link_directories(${lib_output_path})
 else()
 	set(lib_output_path ${PROJECT_BINARY_DIR}/lib)
-
 	set(LIBRARY_OUTPUT_PATH ${lib_output_path})
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${lib_output_path})
+
 	add_library(acl_static STATIC ${lib_src})
 	SET_TARGET_PROPERTIES(acl_static PROPERTIES OUTPUT_NAME "acl")
 

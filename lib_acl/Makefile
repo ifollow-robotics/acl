@@ -30,9 +30,11 @@ CFLAGS = -c -g -W \
 -Wno-long-long \
 -Wuninitialized \
 -D_POSIX_PTHREAD_SEMANTICS \
--DACL_PREPARE_COMPILE \
 -Winvalid-pch \
+-DACL_PREPARE_COMPILE \
 -DUSE_REUSEPORT \
+#-DACL_CLIENT_ONLY \
+#-Wno-implicit-fallthrough \
 #-fstack-protector-all \
 #-DDEBUG_MEM
 #-DUSE_EPOLL \
@@ -66,6 +68,7 @@ ifeq ($(RANLIB),)
 	RANLIB = ranlib
 endif
 
+#using "gcc -dumpversion" can get the gcc's version more easily
 ifeq ($(findstring gcc, $(CC)), gcc)
 	CFLAGS += -Wstrict-prototypes
 	GCC_VERSION=$(shell gcc --version | grep ^gcc | sed 's/^.* //g')
@@ -81,12 +84,12 @@ endif
 ifeq ($(findstring clang, $(CC)), clang)
 	CFLAGS += -Wstrict-prototypes \
 		  -Wno-invalid-source-encoding \
-		  -Wno-extended-offsetof
+		  -Wno-invalid-offsetof
 endif
 
 ifeq ($(findstring clang++, $(CC)), clang)
 	CFLAGS += -Wno-invalid-source-encoding \
-		  -Wno-extended-offsetof
+		  -Wno-invalid-offsetof
 endif
 
 # For FreeBSD
@@ -98,7 +101,7 @@ endif
 # For Darwin
 ifeq ($(findstring Darwin, $(UNIXNAME)), Darwin)
 	CFLAGS += -Wno-invalid-source-encoding \
-		  -Wno-extended-offsetof
+		  -Wno-invalid-offsetof
 	UNIXTYPE = MACOSX
 	RPATH = macos
 endif
@@ -107,7 +110,7 @@ endif
 ifeq ($(findstring Linux, $(UNIXNAME)), Linux)
 	UNIXTYPE = LINUX
 	ifeq ($(findstring i686, $(OSTYPE)), i686)
-		CFLAGS += -march=i686
+#		CFLAGS += -march=i686
 		RPATH = linux32
 	endif
 	ifeq ($(findstring x86_64, $(OSTYPE)), x86_64)

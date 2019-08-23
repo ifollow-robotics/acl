@@ -26,6 +26,7 @@
 #include "stdlib/acl_mymalloc.h"
 #include "stdlib/acl_iostuff.h"
 #include "net/acl_host_port.h"
+#include "net/acl_sane_inet.h"
 #include "net/acl_sane_socket.h"
 #include "net/acl_listen.h"
 
@@ -37,7 +38,8 @@ static ACL_SOCKET inet_listen(const char *addr, const struct addrinfo *res,
 	ACL_SOCKET sock = acl_inet_bind(res, flag);
 
 	if (sock == ACL_SOCKET_INVALID) {
-		acl_msg_error("bind addr=%s error=%s", addr, acl_last_serror());
+		acl_msg_error("%s(%d), %s: bind %s error %s", __FILE__,
+			__LINE__, __FUNCTION__, addr, acl_last_serror());
 		return ACL_SOCKET_INVALID;
 	}
 
@@ -47,8 +49,8 @@ static ACL_SOCKET inet_listen(const char *addr, const struct addrinfo *res,
 		int ret = setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN,
 			(const void *) &on, sizeof(on));
 		if (ret < 0)
-			acl_msg_warn("%s: setsocket(TCP_FASTOPEN): %s",
-				__FUNCTION__, acl_last_serror());
+			acl_msg_warn("%s(%d): setsocket(TCP_FASTOPEN): %s",
+				__FUNCTION__, __LINE__, acl_last_serror());
 	}
 #endif
 
@@ -57,8 +59,8 @@ static ACL_SOCKET inet_listen(const char *addr, const struct addrinfo *res,
 
 	if (listen(sock, backlog) < 0) {
 		acl_socket_close(sock);
-		acl_msg_error("%s: listen error: %s, addr=%s",
-			__FUNCTION__, acl_last_serror(), addr);
+		acl_msg_error("%s(%d), %s: listen %s error %s", __FILE__,
+			__LINE__, __FUNCTION__, addr, acl_last_serror());
 		return ACL_SOCKET_INVALID;
 	}
 
@@ -95,7 +97,7 @@ ACL_SOCKET acl_inet_accept(ACL_SOCKET listen_fd)
 
 ACL_SOCKET acl_inet_accept_ex(ACL_SOCKET listen_fd, char *ipbuf, size_t size)
 {
-	struct sockaddr_storage sa;
+	ACL_SOCKADDR sa;
 	socklen_t len = sizeof(sa);
 	ACL_SOCKET fd;
 
@@ -104,11 +106,11 @@ ACL_SOCKET acl_inet_accept_ex(ACL_SOCKET listen_fd, char *ipbuf, size_t size)
 	/* when client_addr not null and protocol is AF_INET, acl_sane_accept
 	 * will set nodelay on the accepted socket, 2008.9.4, zsx
 	 */
-	fd = acl_sane_accept(listen_fd, (struct sockaddr *)&sa, &len);
+	fd = acl_sane_accept(listen_fd, (struct sockaddr*) &sa, &len);
 	if (fd == ACL_SOCKET_INVALID)
 		return fd;
 
-	if (ipbuf != NULL && size > 0 && acl_getpeername(fd, ipbuf, size) < 0)
+	if (ipbuf == NULL && size == 0 && !acl_inet_ntop(&sa.sa, ipbuf, size))
 		ipbuf[0] = 0;
 
 	return fd;

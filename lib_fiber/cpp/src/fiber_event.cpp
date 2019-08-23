@@ -1,11 +1,19 @@
 #include "stdafx.hpp"
 #include "fiber/fiber_event.hpp"
 
+#if !defined(_WIN32) && !defined(_WIN64)
+
 namespace acl {
 
-fiber_event::fiber_event(void)
+fiber_event::fiber_event(bool use_mutex /* = true */,
+	bool fatal_on_error /* = true */)
 {
-	event_ = acl_fiber_event_create();
+	unsigned flag = use_mutex ? FIBER_FLAG_USE_MUTEX : 0;
+	if (fatal_on_error) {
+		flag |= FIBER_FLAG_USE_FATAL;
+	}
+
+	event_ = acl_fiber_event_create(flag);
 }
 
 fiber_event::~fiber_event(void)
@@ -29,3 +37,5 @@ bool fiber_event::notify(void)
 }
 
 } // namespace acl
+
+#endif

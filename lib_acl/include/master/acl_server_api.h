@@ -1,10 +1,6 @@
 #ifndef	ACL_MASTER_SERVER_API_INCLUDE_H
 #define	ACL_MASTER_SERVER_API_INCLUDE_H
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
 #include "../stdlib/acl_define.h"
 
  /*
@@ -14,6 +10,12 @@ extern "C" {
 #include "../ioctl/acl_ioctl.h"
 #include "../aio/acl_aio.h"
 #include "../event/acl_events.h"
+
+#ifndef ACL_CLIENT_ONLY
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
 #define	ACL_MASTER_SERVER_END			0
 #define ACL_MASTER_SERVER_INT_TABLE		1
@@ -45,8 +47,8 @@ extern "C" {
 #define	ACL_MASTER_SERVER_EXIT_TIMER		26
 #define	ACL_MASTER_SERVER_ON_LISTEN		27
 #define ACL_MASTER_SERVER_ON_BIND		ACL_MASTER_SERVER_ON_LISTEN
-
 #define ACL_MASTER_SERVER_SIGHUP		28
+#define ACL_MASTER_SERVER_ON_UNBIND		29
 
 #define	ACL_APP_CTL_END			ACL_MASTER_SERVER_END
 #define	ACL_APP_CTL_CFG_INT		ACL_MASTER_SERVER_INT_TABLE
@@ -71,6 +73,7 @@ typedef int  (*ACL_MASTER_SERVER_LOOP_FN) (void *);
 typedef void (*ACL_MASTER_SERVER_EXIT_FN) (void *);
 typedef void (*ACL_MASTER_SERVER_ON_LISTEN_FN) (void *, ACL_VSTREAM *);
 typedef void (*ACL_MASTER_SERVER_ON_BIND_FN) (void *, ACL_VSTREAM *);
+typedef void (*ACL_MASTER_SERVER_ON_UNBIND_FN) (void *, ACL_VSTREAM *);
 typedef int  (*ACL_MASTER_SERVER_ON_ACCEPT_FN) (void *, ACL_VSTREAM *);
 typedef int  (*ACL_MASTER_SERVER_HANDSHAKE_FN) (void *, ACL_VSTREAM *);
 typedef void (*ACL_MASTER_SERVER_DISCONN_FN) (void *, ACL_VSTREAM *);
@@ -188,4 +191,5 @@ ACL_API void acl_server_sigterm_setup(void);
 }
 #endif
 
+#endif /* ACL_CLIENT_ONLY */
 #endif

@@ -1,19 +1,9 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Fri 16 Jun 2017 02:00:01 PM CST
- */
-
 #include "stdafx.h"
 #include "master/master_api.h"
 #include "manage/http_client.h"
 #include "service_restart.h"
+
+#define CMD	"restart"
 
 bool service_restart::run(acl::json& json)
 {
@@ -23,7 +13,7 @@ bool service_restart::run(acl::json& json)
 	if (deserialize<restart_req_t>(json, req) == false) {
 		res.status = 400;
 		res.msg    = "invalid json";
-		client_.reply<restart_res_t>(res.status, res);
+		client_.reply<restart_res_t>(res.status, CMD, res);
 		return false;
 	}
 
@@ -65,7 +55,7 @@ bool service_restart::handle(const restart_req_t& req, restart_res_t& res)
 			(int) n, (int) req.data.size());
 	}
 
-	client_.reply<restart_res_t>(res.status, res);
+	client_.reply<restart_res_t>(res.status, CMD, res);
 	client_.on_finish();
 
 	return true;

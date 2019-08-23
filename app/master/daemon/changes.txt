@@ -1,4 +1,45 @@
 
+24) 2018.11.15
+24.1) feature: http_client::do_reply 记录请求信息，以便于排查问题
+
+23) 2018.10.23
+23.1) feature: master_listen.cpp, master_listen_sock() 中的 defer_accept
+可以控制是否采用延迟接收方式
+23.2) bugfix: master_listen.cpp, master_bind_udp() 中在非 reuseport 方式下如果
+没有成功绑定任何地址，则应返回错误
+
+22) 2018.10.17
+22.1) bugfix: 对于 Centos7.x 以下版本，当需 acl_master 绑定 UDP 服务时，会造成
+因类型判断有误导致的崩溃问题，Centos7.x 以上版本不存在此问题，因为 UDP 服务是
+由服务模块自行进行绑定
+
+21) 2017.3.21
+21.1) feature: http_client.cpp 里需要记录客户端发来的命令字
+
+20) 2017.1.31
+20.1) bugfix: master_conf.cpp check_xxx should be override after reloading services' configures.
+
+19) 2018.1.24
+19.1) feature: web interface adds many checking parameters.
+
+18) 2018.1.23
+18.1) feature: web interface adds version info for every services.
+
+17) 2018.1.19
+17.1) log: don't save some command reply information
+
+16) 2018.1.5
+16.1) bugfix: remove command in ACL_MASTER_SERV struct, which maybe be misused
+
+15) 2018.1.3
+15.1) bugfix: the service start item is lost in action/service_list.cpp
+
+14) 2017.12.22
+14.1) bugfix: master_conf.cpp 中 master_add_service 在调用 acl_master_ent_find
+时，应该使用 entry->conf (配置文件路径) 而不是 entry->path 程序路径
+14.2) bugfix: master_api.cpp 远程调用 restart 命令时，没有重新读取配置文件，
+所以造成无法启动服务程序改名后的服务
+
 13) 2017.11.21
 13.1) feature: add master_config command for getting the configure of master
 

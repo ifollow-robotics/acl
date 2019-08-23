@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "fiber/lib_fiber.h"
+#include "fiber/libfiber.h"
 
 static int __max_fiber = 10;
 static __thread int __left_fiber = 10;
@@ -12,7 +12,7 @@ static __thread int __local_key;
 static void free_fn(void *ctx)
 {
 	printf("thread-%ld, fiber-%d: free buf\r\n",
-		acl_pthread_self(), acl_fiber_self());
+		(long) acl_pthread_self(), acl_fiber_self());
 	acl_myfree(ctx);
 }
 
@@ -34,7 +34,7 @@ static void fiber_main(ACL_FIBER *fiber acl_unused, void *ctx acl_unused)
 	}
 
 	printf("thread-%ld, fiber-%d: __local_key: %d, buf: %s\r\n",
-		acl_pthread_self(), acl_fiber_self(), __local_key, buf);
+		(long) acl_pthread_self(), acl_fiber_self(), __local_key, buf);
 	return;
 
 	if (--__left_fiber == 0) {

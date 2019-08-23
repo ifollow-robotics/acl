@@ -5,7 +5,7 @@ service $<PROGRAM>
 #	进程是否禁止运行
 	master_disable = no
 #	服务监听为域套接口
-	master_service = $<PROGRAM>.sock
+	master_service = $<PROGRAM>.sock@unix
 #	服务类型
 	master_type = unix
 
@@ -34,7 +34,7 @@ service $<PROGRAM>
 #	进程启动参数，只能为: -u [是否允许以某普通用户的身份运行]
 #	master_args = 
 #	进程日志记录文件
-	master_log = {install_path}/var/log/$<PROGRAM>
+	master_log = {install_path}/var/log/$<PROGRAM>.log
 #	调试日志方式，格式：tag:level; tag:level; tab:level, 如：all:1; 101:2
 #	master_debug =
 #	传递给服务子进程的环境变量, 可以通过 getenv("SERVICE_ENV") 获得此值
@@ -43,6 +43,10 @@ service $<PROGRAM>
 
 #	是否允许产生 core 文件
 #	trigger_enable_core = 1
+#	core 文件大小限制，-1 表示不限制 core 文件大小，0 表示禁止产生 core，> 0 表示 core 文件最大大小
+#	trigger_core_limit = -1
+#	进程退出时是否禁止产生 core 文件
+#	trigger_disable_core_onexit = 1
 #	每个进程实例处理连接数的最大次数，超过此值后进程实例主动退出
 	trigger_use_limit = 250
 #	记录进程PID的位置(对于多进程实例来说没有意义)

@@ -1,7 +1,10 @@
 #pragma once
+#include "../stdlib/thread_mutex.hpp"
 #include "../stream/aio_handle.hpp"
 #include "../stream/aio_listen_stream.hpp"
 #include "master_base.hpp"
+
+#ifndef ACL_CLIENT_ONLY
 
 struct ACL_VSTREAM;
 struct ACL_VSTRING;
@@ -74,6 +77,10 @@ private:
 	virtual bool accept_callback(aio_socket_stream* client);
 
 private:
+	thread_mutex lock_;
+	void push_back(server_socket* ss);
+
+private:
 #if defined(_WIN32) || defined(_WIN64)
 	// 当接收到一个客户端连接时回调此函数
 	static void service_main(SOCKET, void*);
@@ -98,3 +105,5 @@ private:
 };
 
 }  // namespace acl
+
+#endif // ACL_CLIENT_ONLY

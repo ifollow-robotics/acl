@@ -3,11 +3,14 @@
 #include "../stdlib/string.hpp"
 #include "../db/db_handle.hpp"
 
+#if !defined(ACL_DB_DISABLE)
+
 typedef struct sqlite3 sqlite3;
 
 namespace acl {
 
 class charset_conv;
+class sqlite_cursor;
 
 class ACL_CPP_API db_sqlite : public db_handle
 {
@@ -66,6 +69,20 @@ public:
 	{
 		return db_;
 	}
+
+	/**
+	 * 准备游标
+	 * @param cursor {sqlite_cursor&}
+	 * @return {bool}
+	 */
+	bool prepare(sqlite_cursor& cursor);
+
+	/**
+	 * 执行下一步，如果是查询类过程，则将查询结果存入给定的参数中
+	 * @param cursor {sqlite_cursor&}
+	 * @return {bool}
+	 */
+	bool next(sqlite_cursor& cursor, bool* done);
 
 	/********************************************************************/
 	/*            以下为基类 db_handle 的虚接口                         */
@@ -154,3 +171,5 @@ private:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_DB_DISABLE)

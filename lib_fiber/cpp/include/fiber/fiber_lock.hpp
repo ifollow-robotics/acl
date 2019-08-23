@@ -1,4 +1,5 @@
 #pragma once
+#include "fiber_cpp_define.hpp"
 
 struct ACL_FIBER_MUTEX;
 struct ACL_FIBER_RWLOCK;
@@ -6,29 +7,29 @@ struct ACL_FIBER_RWLOCK;
 namespace acl {
 
 /**
- * ä»…èƒ½ç”¨äºåŒä¸€çº¿ç¨‹å†…éƒ¨çš„åç¨‹ä¹‹é—´è¿›è¡Œäº’æ–¥çš„äº’æ–¥é”
+ * ½öÄÜÓÃÓÚÍ¬Ò»Ïß³ÌÄÚ²¿µÄĞ­³ÌÖ®¼ä½øĞĞ»¥³âµÄ»¥³âËø
  */
-class fiber_mutex
+class FIBER_CPP_API fiber_mutex : public noncopyable
 {
 public:
 	fiber_mutex(void);
 	~fiber_mutex(void);
 
 	/**
-	 * ç­‰å¾…äº’æ–¥é”
-	 * @return {bool} è¿”å› true è¡¨ç¤ºåŠ é”æˆåŠŸï¼Œå¦åˆ™è¡¨ç¤ºå†…éƒ¨å‡ºé”™
+	 * µÈ´ı»¥³âËø
+	 * @return {bool} ·µ»Ø true ±íÊ¾¼ÓËø³É¹¦£¬·ñÔò±íÊ¾ÄÚ²¿³ö´í
 	 */
 	bool lock(void);
 
 	/**
-	 * å°è¯•ç­‰å¾…äº’æ–¥é”
-	 * @return {bool} è¿”å› true è¡¨ç¤ºåŠ é”æˆåŠŸï¼Œå¦åˆ™è¡¨ç¤ºé”æ­£åœ¨è¢«å ç”¨
+	 * ³¢ÊÔµÈ´ı»¥³âËø
+	 * @return {bool} ·µ»Ø true ±íÊ¾¼ÓËø³É¹¦£¬·ñÔò±íÊ¾ËøÕıÔÚ±»Õ¼ÓÃ
 	 */
 	bool trylock(void);
 
 	/**
-	 * äº’æ–¥é”æ‹¥æœ‰è€…é‡Šæ”¾é”å¹¶é€šçŸ¥ç­‰å¾…è€…
-	 * @return {bool} è¿”å› true è¡¨ç¤ºé€šçŸ¥æˆåŠŸï¼Œå¦åˆ™è¡¨ç¤ºå†…éƒ¨å‡ºé”™
+	 * »¥³âËøÓµÓĞÕßÊÍ·ÅËø²¢Í¨ÖªµÈ´ıÕß
+	 * @return {bool} ·µ»Ø true ±íÊ¾Í¨Öª³É¹¦£¬·ñÔò±íÊ¾ÄÚ²¿³ö´í
 	 */
 	bool unlock(void);
 
@@ -37,43 +38,43 @@ private:
 };
 
 /**
- * ä»…èƒ½ç”¨åœ¨åŒä¸€çº¿ç¨‹å†…çš„åç¨‹ä¹‹é—´è¿›è¡Œäº’æ–¥çš„è¯»å†™é”
+ * ½öÄÜÓÃÔÚÍ¬Ò»Ïß³ÌÄÚµÄĞ­³ÌÖ®¼ä½øĞĞ»¥³âµÄ¶ÁĞ´Ëø
  */
-class fiber_rwlock
+class FIBER_CPP_API fiber_rwlock : public noncopyable
 {
 public:
 	fiber_rwlock(void);
 	~fiber_rwlock(void);
 
 	/**
-	 * åŠ è¯»é”
+	 * ¼Ó¶ÁËø
 	 */
 	void rlock(void);
 
 	/**
-	 * å°è¯•åŠ è¯»é”
-	 * @return {bool} è¿”å› true è¡¨ç¤ºåŠ é”æˆåŠŸï¼Œå¦åˆ™è¡¨ç¤ºé”æ­£åœ¨è¢«å ç”¨
+	 * ³¢ÊÔ¼Ó¶ÁËø
+	 * @return {bool} ·µ»Ø true ±íÊ¾¼ÓËø³É¹¦£¬·ñÔò±íÊ¾ËøÕıÔÚ±»Õ¼ÓÃ
 	 */
 	bool tryrlock(void);
 
 	/**
-	 * è§£è¯»é”
+	 * ½â¶ÁËø
 	 */
 	void runlock(void);
 
 	/**
-	 * åŠ å†™é”
+	 * ¼ÓĞ´Ëø
 	 */
 	void wlock(void);
 
 	/**
-	 * å°è¯•åŠ å†™é”
-	 * @return {bool} è¿”å› true è¡¨ç¤ºåŠ é”æˆåŠŸï¼Œå¦åˆ™è¡¨ç¤ºé”æ­£åœ¨è¢«å ç”¨
+	 * ³¢ÊÔ¼ÓĞ´Ëø
+	 * @return {bool} ·µ»Ø true ±íÊ¾¼ÓËø³É¹¦£¬·ñÔò±íÊ¾ËøÕıÔÚ±»Õ¼ÓÃ
 	 */
 	bool trywlock(void);
 
 	/**
-	 * è§£å†™é”
+	 * ½âĞ´Ëø
 	 */
 	void wunlock(void);
 

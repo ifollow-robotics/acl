@@ -1,21 +1,11 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Fri 16 Jun 2017 02:00:01 PM CST
- */
-
 #include "stdafx.h"
 #include "master/master_params.h"
 #include "master/master_api.h"
 #include "manage/http_client.h"
 #include "type_defs.h"
 #include "service_start.h"
+
+#define CMD	"start"
 
 service_start::service_start(http_client& client)
 : client_(client)
@@ -35,7 +25,7 @@ bool service_start::run(acl::json& json)
 		start_res_t res;
 		res.status = 400;
 		res.msg    = "invalid json";
-		client_.reply<start_res_t>(res.status, res);
+		client_.reply<start_res_t>(res.status, CMD, res);
 
 		delete this;
 		return false;
@@ -178,7 +168,7 @@ void service_start::start_finish(void)
 		acl_master_callback_clean(it->first.c_str());
 	}
 
-	client_.reply<start_res_t>(res_.status, res_);
+	client_.reply<start_res_t>(res_.status, CMD, res_);
 	client_.on_finish();
 
 	delete this;

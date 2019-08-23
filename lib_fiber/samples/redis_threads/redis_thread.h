@@ -1,15 +1,17 @@
 class redis_thread : public acl::thread
 {
 public:
-	redis_thread(const char* addr, int conn_timeout, int rw_timeout,
+	redis_thread(const char* addr, const char* passwd, int conn_timeout,
+		int rw_timeout, int fibers_max, int stack_size, int oper_count);
+	redis_thread(acl::redis_client_cluster& cluster,
 		int fibers_max, int stack_size, int oper_count);
 
-	~redis_thread(void) {}
+	~redis_thread(void);
 
 private:
 	acl::redis_client_cluster& get_cluster(void)
 	{
-		return cluster_;
+		return *cluster_;
 	}
 
 	int get_fibers_max(void) const
@@ -37,6 +39,7 @@ protected:
 
 private:
 	acl::string addr_;
+	acl::string passwd_;
 	int conn_timeout_;
 	int rw_timeout_;
 	int fibers_max_;
@@ -44,7 +47,8 @@ private:
 	int stack_size_;
 	int oper_count_;
 	struct timeval begin_;
-	acl::redis_client_cluster cluster_;
+	acl::redis_client_cluster* cluster_;
+	acl::redis_client_cluster* cluster_internal_;
 
 	static void fiber_redis(ACL_FIBER *fiber, void *ctx);
 };

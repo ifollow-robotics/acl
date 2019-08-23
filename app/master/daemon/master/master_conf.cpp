@@ -21,13 +21,16 @@ void acl_master_refresh(void)
 	for (serv = acl_var_master_head; serv != 0; serv = serv->next)
 		serv->flags |= ACL_MASTER_FLAG_MARK;
 
+	/* load the main.cf of acl_master */
+	acl_master_main_config();
+
 	/*
 	 * Read each service's configuration file. The master_conf() routine
 	 * unmarks services upon update. New services are born with the mark
 	 * bit off. After this, anything with the mark bit on should be
 	 * removed.
 	 */
-	acl_master_config();
+	acl_master_start_services();
 
 	/*
 	 * Delete all services that are still marked - they disappeared from
@@ -45,19 +48,22 @@ void acl_master_refresh(void)
 
 #define SWAP(type,a,b)	{ type temp = a; a = b; b = temp; }
 
-static int master_add_service(ACL_MASTER_SERV *entry)
+int acl_master_refresh_service(ACL_MASTER_SERV *entry)
 {
-	ACL_MASTER_SERV *serv = acl_master_ent_find(entry->path);
+	ACL_MASTER_SERV *serv = acl_master_ent_find(entry->conf);
 
 	/*
 	 * Add a new service entry. We do not really care in what
 	 * order the service entries are kept in memory.
 	 */
 	if (serv == 0) {
+		if (acl_master_service_start(entry) < 0)
+			return -1;
+
 		entry->next  = acl_var_master_head;
 		entry->start = (long) time(NULL);
 		acl_var_master_head = entry;
-		return acl_master_service_start(entry);
+		return 0;
 	}
 
 	/*
@@ -75,12 +81,20 @@ static int master_add_service(ACL_MASTER_SERV *entry)
 	serv->max_proc = entry->max_proc;
 	serv->prefork_proc = entry->prefork_proc;
 	serv->throttle_delay = entry->throttle_delay;
+	serv->check_fds    = entry->check_fds;
+	serv->check_mem    = entry->check_mem;
+	serv->check_cpu    = entry->check_cpu;
+	serv->check_io     = entry->check_io;
+	serv->check_net    = entry->check_net;
+	serv->check_limits = entry->check_limits;
 	SWAP(char *, serv->path, entry->path);
-	SWAP(char *, serv->command, entry->command);
+	//SWAP(char *, serv->command, entry->command);
 	SWAP(char *, serv->cmdext, entry->cmdext);
 	SWAP(char *, serv->notify_addr, entry->notify_addr);
 	SWAP(char *, serv->notify_recipients, entry->notify_recipients);
+	SWAP(char *, serv->version, entry->version);
 	SWAP(ACL_ARGV *, serv->args, entry->args);
+
 	acl_master_service_restart(serv);
 	acl_master_ent_free(entry);
 
@@ -93,13 +107,7 @@ static void master_scan_services(void)
 {
 	const char *myname = "master_scan_services";
 	ACL_MASTER_SERV *entry;
-	char *pathname;
 	int   service_null = 1;
-
-	/* load main.cf configuration of master routine */
-	pathname = acl_concatenate(acl_var_master_conf_dir, "/", "main.cf", 0);
-	acl_master_params_load(pathname);
-	acl_myfree(pathname);
 
 	/* create the global acl_var_master_global_event */
 	acl_master_service_init();
@@ -125,7 +133,7 @@ static void master_scan_services(void)
 		if (acl_msg_verbose)
 			acl_master_ent_print(entry);
 
-		if (master_add_service(entry) < 0) {
+		if (acl_master_refresh_service(entry) < 0) {
 			acl_msg_error("%s(%d), %s: start %s error",
 				__FILE__, __LINE__, __FUNCTION__, entry->path);
 			acl_master_ent_free(entry);
@@ -167,7 +175,7 @@ static void master_load_services(void)
 		tokens = acl_argv_split(ptr, "|");
 		filepath = tokens->argv[0];
 		entry = acl_master_ent_load(filepath);
-		if (entry != NULL && master_add_service(entry) < 0) {
+		if (entry != NULL && acl_master_refresh_service(entry) < 0) {
 			acl_msg_error("%s(%d), %s: start %s error",
 				__FILE__, __LINE__, __FUNCTION__, filepath);
 			acl_master_ent_free(entry);
@@ -178,8 +186,18 @@ static void master_load_services(void)
 	acl_fclose(fp);
 }
 
-void acl_master_config(void)
+void acl_master_start_services(void)
 {
 	master_scan_services();
 	master_load_services();
+}
+
+void acl_master_main_config(void)
+{
+	char *pathname;
+
+	/* load main.cf configuration of master routine */
+	pathname = acl_concatenate(acl_var_master_conf_dir, "/", "main.cf", 0);
+	acl_master_params_load(pathname);
+	acl_myfree(pathname);
 }

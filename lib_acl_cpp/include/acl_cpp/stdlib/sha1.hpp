@@ -22,11 +22,12 @@
  */
 
 #pragma once
+#include "noncopyable.hpp"
 
 namespace acl
 {
 
-class sha1
+class sha1 : public noncopyable
 {
 public:
 	sha1();
@@ -38,9 +39,10 @@ public:
 	void reset();
 
 	/*
-	 *  Returns the message digest
+	 *  Returns the message digest, message_digest_array's length must >= 20
 	 */
-	bool result(unsigned *message_digest_array);
+	bool result(unsigned char *message_digest_array);
+	bool result2(unsigned *message_digest_array);
 
 	/*
 	 *  Provide input to SHA1

@@ -21,6 +21,13 @@
 
 #endif
 
+static acl_connect_fn __sys_connect = connect;
+
+void acl_set_connect(acl_connect_fn fn)
+{
+	__sys_connect = fn;
+}
+
 /* acl_sane_connect - sanitize connect() results */
 
 int acl_sane_connect(ACL_SOCKET sock, const struct sockaddr *sa, socklen_t len)
@@ -53,11 +60,11 @@ int acl_sane_connect(ACL_SOCKET sock, const struct sockaddr *sa, socklen_t len)
 
 #ifdef SO_REUSEADDR
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
-		(char *) &on, sizeof(on)) < 0)
-	{
+		(char *) &on, sizeof(on)) < 0) {
+
 		acl_msg_error("acl_sane_connect: setsockopt error(%s)",
 			acl_last_serror());
 	}
 #endif
-	return connect(sock, sa, len);
+	return __sys_connect(sock, sa, len);
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "../acl_cpp_define.hpp"
 #include "../stdlib/thread_mutex.hpp"
+#include "../stdlib/noncopyable.hpp"
 #include <vector>
 
 namespace acl
@@ -23,11 +24,11 @@ class polarssl_io;
  * 连接对象进行证书配置；该类加载了全局性的证书、密钥等信息；每一个 SSL 对象
  * (polarssl_io) 调用本对象的setup_certs 方法来初始化自身的证书、密钥等信息
  */
-class ACL_CPP_API polarssl_conf
+class ACL_CPP_API polarssl_conf : public noncopyable
 {
 public:
-	polarssl_conf();
-	~polarssl_conf();
+	polarssl_conf(void);
+	~polarssl_conf(void);
 
 	/**
 	 * 加载 CA 根证书(每个配置实例只需调用一次本方法)
@@ -70,7 +71,7 @@ public:
 	 * 获得随机数生成器的熵对象
 	 * @return {void*}，返回值为 entropy_context 类型
 	 */
-	void* get_entropy()
+	void* get_entropy(void)
 	{
 		return entropy_;
 	}
@@ -108,7 +109,7 @@ private:
 	polarssl_verify_t verify_mode_;
 
 	void init_once(void);
-	void free_ca();
+	void free_ca(void);
 };
 
 } // namespace acl

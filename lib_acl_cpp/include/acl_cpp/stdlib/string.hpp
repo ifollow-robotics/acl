@@ -2,6 +2,7 @@
 #include "../acl_cpp_define.hpp"
 #include <vector>
 #include <list>
+#include <string>
 #include <stdarg.h>
 #include <utility>
 
@@ -149,6 +150,20 @@ public:
 	 */
 	string& operator=(const string* s);
 
+	/**
+	 * 对目标字符串类对象赋值
+	 * @param s {const std::string&} 源字符串对象
+	 * @return {string&} 返回当前对象的引用，便于对该类对象连续进行操作
+	 */
+	string& operator=(const std::string& s);
+
+	/**
+	 * 对目标字符串类对象赋值
+	 * @param s {const std::string*} 源字符串对象
+	 * @return {string&} 返回当前对象的引用，便于对该类对象连续进行操作
+	 */
+	string& operator=(const std::string* s);
+
 #if defined(_WIN32) || defined(_WIN64)
 	/**
 	 * 对目标字符串类对象赋值
@@ -266,6 +281,21 @@ public:
 	 * @return {string&} 目标字符串对象的引用
 	 */
 	string& operator+=(const string* s);
+
+	/**
+	 * 向目标字符串对象尾部添加字符串
+	 * @param s {const std::string&} 源字符串对象引用
+	 * @return {string&} 目标字符串对象的引用
+	 */
+	string& operator+=(const std::string& s);
+
+	/**
+	 * 向目标字符串对象尾部添加字符串
+	 * @param s {const std::string*} 源字符串对象指针
+	 * @return {string&} 目标字符串对象的引用
+	 */
+	string& operator+=(const std::string* s);
+
 #if defined(_WIN32) || defined(_WIN64)
 	/**
 	 * 向目标字符串对象尾部添加有符号长整型数字，当为目标字符串对象为
@@ -367,6 +397,20 @@ public:
 
 	/**
 	 * 向目标字符串对象尾部添加字符串
+	 * @param s {const std::string&} 源字符串对象引用
+	 * @return {string&} 目标字符串对象的引用
+	 */
+	string& operator<<(const std::string& s);
+
+	/**
+	 * 向目标字符串对象尾部添加字符串
+	 * @param s {const std::string*} 源字符串对象指针
+	 * @return {string&} 目标字符串对象的引用
+	 */
+	string& operator<<(const std::string* s);
+
+	/**
+	 * 向目标字符串对象尾部添加字符串
 	 * @param s {const char*} 源字符串指针
 	 * @return {string&} 目标字符串对象的引用
 	 */
@@ -462,6 +506,28 @@ public:
 	 * @return {size_t} 返回拷贝的实际字节数，empty() == true 时，则返回 0
 	 */
 	size_t operator>>(string* s);
+
+	/**
+	 * 将字符串对象中的内容赋予目标字符串对象
+	 * @param s {string&} 目标字符串对象
+	 * @return {size_t} 返回拷贝的实际字节数，empty() == true 时，则返回 0
+	 */
+	size_t operator>>(string& s);
+
+	/**
+	 * 将字符串对象中的内容赋予目标字符串对象
+	 * @param s {std::string*} 目标字符串对象
+	 * @return {size_t} 返回拷贝的实际字节数，empty() == true 时，则返回 0
+	 */
+	size_t operator>>(std::string* s);
+
+	/**
+	 * 将字符串对象中的内容赋予目标字符串对象
+	 * @param s {std::string&} 目标字符串对象
+	 * @return {size_t} 返回拷贝的实际字节数，empty() == true 时，则返回 0
+	 */
+	size_t operator>>(std::string& s);
+
 #if defined(_WIN32) || defined(_WIN64)
 	/**
 	 * 将字符串对象中的内容赋予目标 64 位有符号整数
@@ -607,6 +673,28 @@ public:
 	 * @return {bool} 返回 true 表示二者相等
 	 */
 	bool equal(const string& s, bool case_sensitive = true) const;
+
+	/**
+	 * 检查当前 string 对象是否以指定的字符串开始
+	 * @param s {const char*}
+	 * @param case_sensitive {bool} 是否区分大小写
+	 * @return {bool}
+	 */
+	bool begin_with(const char* s, bool case_sensitive = true) const;
+	bool begin_with(const char* s, size_t len, bool case_sensitive = true) const;
+	bool begin_with(const string& s, bool case_sensitive = true) const;
+	bool begin_with(const void* v, size_t len) const;
+
+	/**
+	 * 检查当前 string 对象是否以指定的字符串结束
+	 * @param s {const char*}
+	 * @param case_sensitive {bool} 是否区分大小写
+	 * @return {bool}
+	 */
+	bool end_with(const char* s, bool case_sensitive = true) const;
+	bool end_with(const char* s, size_t len, bool case_sensitive = true) const;
+	bool end_with(const string& s, bool case_sensitive = true) const;
+	bool end_with(const void* v, size_t len) const;
 
 	/**
 	 * 比较两个字符串对象的内容是否相同（区分大小写）
@@ -1184,17 +1272,53 @@ public:
 	static string& parse_int64(unsigned long long int n);
 #endif
 
+	/**
+	 * 模板函数，可用在以下场景:
+	 * string s1, s2;
+	 * T v;
+	 * s1 = s2 + v;
+	 */
+	template<typename T>
+	string& operator+(T v)
+	{
+		*this += v;
+		return *this;
+	}
+
 private:
-	bool use_bin_;
 	ACL_VSTRING* vbf_;
 	char* scan_ptr_;
 	std::list<string>* list_tmp_;
 	std::vector<string>* vector_tmp_;
 	std::pair<string, string>* pair_tmp_;
 	ACL_LINE_STATE* line_state_;
-	int   line_state_offset_;
+	int  line_state_offset_;
+	bool use_bin_;
 
 	void init(size_t len);
 };
+
+/**
+ * 模板函数，可用在以下场景:
+ * string s1, s2;
+ * T v;
+ * s1 = v + s2;
+ */
+template<typename T>
+string operator+(T v, const string& rhs)
+{
+	string s;
+	s = v;
+	s += rhs;
+	return s;
+}
+
+/**
+ * 示例:
+ * string s, s1 = "hello", s2 = "world";
+ * s = s1 + " " + s2;
+ * s = ">" + s1 + " " + s2;
+ * s = 1000 + s1 + " " + s2 + 1000;
+ */
 
 } // namespce acl

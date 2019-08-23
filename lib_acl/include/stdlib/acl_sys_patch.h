@@ -123,6 +123,13 @@ ACL_API int acl_socket_writev(ACL_SOCKET fd, const struct iovec *vec,
 	int count, int timeout, ACL_VSTREAM *fp, void *arg);
 
 /**
+ * 判断套接字是否正常
+ * @param fd {ACL_SOCKET}
+ * @return {int} 返回值 1 表示正常，返回 0 表示异常
+ */
+ACL_API	int acl_socket_alive(ACL_SOCKET fd);
+
+/**
  * 打开文件句柄
  * @param filepath {cosnt char*} 文件路径
  * @param flags {int} 打开标志位, O_RDONLY | O_WRONLY | O_RDWR, 
@@ -222,6 +229,31 @@ ACL_API acl_int64 acl_file_fsize(ACL_FILE_HANDLE fh, ACL_VSTREAM *fp, void *arg)
  */
 ACL_API int acl_sane_socketpair(int domain, int type, int protocol,
 		ACL_SOCKET result[2]);
+
+/* in acl_sys_socket.c */
+
+#if defined(_WIN32) || defined(_WIN64)
+typedef int (WINAPI *acl_close_socket_fn)(ACL_SOCKET);
+typedef int (WINAPI *acl_recv_fn)(ACL_SOCKET, char *, int, int);
+typedef int (WINAPI *acl_send_fn)(ACL_SOCKET, const char *, int, int);
+#else
+typedef int (*acl_close_socket_fn)(ACL_SOCKET);
+typedef ssize_t  (*acl_read_fn)(ACL_SOCKET, void *, size_t);
+typedef ssize_t  (*acl_recv_fn)(ACL_SOCKET, void *, size_t, int);
+typedef ssize_t  (*acl_write_fn)(ACL_SOCKET, const void *, size_t);
+typedef ssize_t  (*acl_writev_fn)(ACL_SOCKET, const struct iovec *, int);
+typedef ssize_t  (*acl_send_fn)(ACL_SOCKET, const void *, size_t, int);
+#endif
+
+#if !defined(_WIN32) && !defined(_WIN64)
+ACL_API void acl_set_read(acl_read_fn fn);
+ACL_API void acl_set_write(acl_write_fn fn);
+ACL_API void acl_set_writev(acl_writev_fn fn);
+#endif
+
+ACL_API void acl_set_close_socket(acl_close_socket_fn fn);
+ACL_API void acl_set_recv(acl_recv_fn fn);
+ACL_API void acl_set_send(acl_send_fn fn);
 
 # ifdef	__cplusplus
 }

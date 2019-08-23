@@ -32,7 +32,8 @@ static bool http_get(http_request* conn, int n)
 {
 	// 创建 HTTP 请求头数据
 	http_header& header = conn->request_header();
-	header.set_url("/")
+	header.set_host("www.sina.com.cn")
+		.set_url("/")
 		.set_keep_alive(true)
 		.set_method(HTTP_METHOD_GET)
 		.accept_gzip(__unzip);

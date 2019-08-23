@@ -77,6 +77,9 @@ struct ACL_VSTREAM {
 #define	ACL_VSTREAM_TYPE_LISTEN_INET    (1 << 3)
 #define	ACL_VSTREAM_TYPE_LISTEN_UNIX    (1 << 4)
 #define ACL_VSTREAM_TYPE_LISTEN_IOCP    (1 << 5)
+#define ACL_VSTREAM_TYPE_INET4		(1 << 6)
+#define ACL_VSTREAM_TYPE_INET6		(1 << 7)
+#define ACL_VSTREAM_TYPE_UNIX		(1 << 8)
 
 	acl_off_t offset;               /**< cached seek info */
 	acl_off_t sys_offset;           /**< cached seek info */
@@ -136,10 +139,10 @@ struct ACL_VSTREAM {
 	void *context;                  /**< the application's special data */
 
 	ACL_ARRAY *close_handle_lnk;    /**< before this fp is free,
-	                                 * function in close_handle_lnk
-	                                 * will be called.
-	                                 * add by zsx, 2006.6.20
-	                                 */
+					 * function in close_handle_lnk
+					 * will be called.
+					 * add by zsx, 2006.6.20
+					 */
 	int (*sys_getc)(ACL_VSTREAM*);  /**< called by ACL_VSTREAM_GETC()/1 */
 	ACL_VSTREAM_RD_FN read_fn;      /**< system socket read API */
 	ACL_VSTREAM_WR_FN write_fn;     /**< system socket write API */
@@ -519,14 +522,23 @@ ACL_API int acl_vstream_gets_nonl_peek(ACL_VSTREAM *fp, ACL_VSTRING *buf, int *r
 ACL_API int acl_vstream_readn_peek(ACL_VSTREAM *fp, ACL_VSTRING *buf, int cnt, int *ready);
 
 /**
- * 一次性从 ACL_VSTREAM 流或系统缓存区中读取不固定长度的数据,
- * 只要能读到大于 0 个字节的数据则将 ready 标志位置位
+ * 一次性从 ACL_VSTREAM 流或系统缓存区中读取不固定长度的数据
  * @param fp {ACL_VSTREAM*} 数据流 
  * @param buf {ACL_VSTRING*} 数据缓冲区
  * @return  ret {int}, ret == ACL_VSTREAM_EOF: 表示出错, 应该关闭本地数据流,
  *  ret >= 0: 成功从 fp 数据流的缓冲区中读取了 ret 个字节的数据.
  */
 ACL_API int acl_vstream_read_peek(ACL_VSTREAM *fp, ACL_VSTRING *buf);
+
+/**
+ * 一次性从 ACL_VSTREAM 流或系统缓存区中读取不固定长度的数据
+ * @param fp {ACL_VSTREAM*} 数据流 
+ * @param buf {void*} 数据缓冲区
+ * @param size {size_t} buf 长度
+ * @return  ret {int}, ret == ACL_VSTREAM_EOF: 表示出错, 应该关闭本地数据流,
+ *  ret >= 0: 成功从 fp 数据流的缓冲区中读取了 ret 个字节的数据.
+ */
+ACL_API int acl_vstream_read_peek3(ACL_VSTREAM *fp, void *buf, size_t size);
 
 /**
  * 检查 ACL_VSTREAM 流是否可读或出错
@@ -817,9 +829,9 @@ ACL_API void acl_vstream_set_peer(ACL_VSTREAM *fp, const char *addr);
  * 当 ACL_VSTREAM 为网络流时，此函数设置远程连接地址
  * @param fp {ACL_VSTREAM*} 网络流，非空
  * @param sa {const struct sockaddr *} 远程连接地址，非空
+ * @return {int} 返回值 == 0 表示成功，< 0 表示失败
  */
-ACL_API void acl_vstream_set_peer_addr(ACL_VSTREAM *fp,
-	const struct sockaddr *sa);
+ACL_API int acl_vstream_set_peer_addr(ACL_VSTREAM *fp, const struct sockaddr *sa);
 
 /**
  * 当 ACL_VSTREAM 为网络流时，用此宏取得本地的地址
@@ -837,9 +849,9 @@ ACL_API void acl_vstream_set_local(ACL_VSTREAM *fp, const char *addr);
  * 当 ACL_VSTREAM 为网络流时，此函数设置本地地址
  * @param fp {ACL_VSTREAM*} 网络流，非空
  * @param sa {const sockaddr*} 本地地址，非空
+ * @return {int} 返回值 == 0 表示成功，< 0 表示失败
  */
-ACL_API void acl_vstream_set_local_addr(ACL_VSTREAM *fp,
-	const struct sockaddr *sa);
+ACL_API int acl_vstream_set_local_addr(ACL_VSTREAM *fp, const struct sockaddr *sa);
 
 ACL_API int acl_vstream_add_object(ACL_VSTREAM *fp, const char *key, void *obj);
 ACL_API int acl_vstream_del_object(ACL_VSTREAM *fp, const char *key);
@@ -927,4 +939,3 @@ ACL_API void acl_socket_close_hook(int (*close_fn)(ACL_SOCKET));
         ((stream_ptr)->flag & ACL_VSTREAM_FLAG_TIMEOUT)
 
 #endif
-

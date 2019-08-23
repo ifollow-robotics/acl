@@ -1,12 +1,14 @@
-
 #ifndef	ACL_AIO_PARAMS_INCLUDE_H
 #define	ACL_AIO_PARAMS_INCLUDE_H
+
+#include "../stdlib/acl_define.h"
+
+#ifndef ACL_CLIENT_ONLY
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-#include "../stdlib/acl_define.h"
 #ifdef ACL_UNIX
 
 extern int   acl_var_aio_pid;
@@ -93,6 +95,14 @@ extern char *acl_var_aio_accept_alone;
 #define	ACL_DEF_AIO_ENABLE_CORE		1
 extern int   acl_var_aio_enable_core;
 
+#define ACL_VAR_AIO_DISABLE_CORE_ONEXIT	"aio_disable_core_onexit"
+#define ACL_DEF_AIO_DISABLE_CORE_ONEXIT	1
+extern int   acl_var_aio_disable_core_onexit;
+
+#define ACL_VAR_AIO_CORE_LIMIT		"aio_core_limit"
+#define ACL_DEF_AIO_CORE_LIMIT		-1
+extern long long int acl_var_aio_core_limit;
+
 #define	ACL_VAR_AIO_QUICK_ABORT		"aio_quick_abort"
 #define	ACL_DEF_AIO_QUICK_ABORT		1
 extern int   acl_var_aio_quick_abort;
@@ -131,5 +141,6 @@ extern char *acl_var_aio_deny_info;
 }
 #endif
 
+#endif /* ACL_CLIENT_ONLY */
 #endif
 

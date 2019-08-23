@@ -1,19 +1,9 @@
-/**
- * Copyright (C) 2015-2018
- * All rights reserved.
- *
- * AUTHOR(S)
- *   Zheng Shuxin
- *   E-mail: zhengshuxin@qiyi.com
- * 
- * VERSION
- *   Fri 16 Jun 2017 01:58:08 PM CST
- */
-
 #include "stdafx.h"
 #include "master/master_api.h"
 #include "manage/http_client.h"
 #include "service_stop.h"
+
+#define CMD	"stop"
 
 bool service_stop::stop_one(const char* path, stop_res_data_t& data)
 {
@@ -34,7 +24,7 @@ bool service_stop::run(acl::json& json)
 	if (deserialize<stop_req_t>(json, req) == false) {
 		res.status = 400;
 		res.msg    = "invalid json";
-		client_.reply<stop_res_t>(res.status, res);
+		client_.reply<stop_res_t>(res.status, CMD, res);
 		return false;
 	}
 
@@ -66,7 +56,7 @@ bool service_stop::handle(const stop_req_t& req, stop_res_t& res)
 			(int) n, (int) req.data.size());
 	}
 
-	client_.reply<stop_res_t>(res.status, res);
+	client_.reply<stop_res_t>(res.status, CMD, res);
 	client_.on_finish();
 
 	return true;

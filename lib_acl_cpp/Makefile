@@ -24,6 +24,11 @@ CFLAGS = -c -g -W \
 -DHAS_POLARSSL_DLL \
 -Winvalid-pch \
 -DACL_PREPARE_COMPILE \
+#-DACL_CLIENT_ONLY \
+#-DACL_REDIS_DISABLE \
+#-DACL_BEANSTALK_DISABLE \
+#-DACL_DB_DISABLE \
+#-DACL_MIME_DISABLE \
 #-DUSE_DYNAMIC
 # -Wcast-align
 #-Wcast-qual
@@ -75,7 +80,7 @@ endif
 
 ifeq ($(findstring clang++, $(CC)), clang++)
 	CFLAGS += -Wno-invalid-source-encoding \
-		  -Wno-extended-offsetof
+		  -Wno-invalid-offsetof
 endif
 
 # For FreeBSD
@@ -88,7 +93,7 @@ endif
 # For Darwin
 ifeq ($(findstring Darwin, $(UNIXNAME)), Darwin)
 	CFLAGS += -Wno-invalid-source-encoding \
-		  -Wno-extended-offsetof \
+		  -Wno-invalid-offsetof \
 		  -Wno-unused-private-field
 	CFLAGS += -Wshadow
 	UNIXTYPE = MACOSX

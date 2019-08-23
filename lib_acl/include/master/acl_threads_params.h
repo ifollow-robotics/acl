@@ -1,11 +1,13 @@
 #ifndef	ACL_THREADS_PARAMS_INCLUDE_H
 #define	ACL_THREADS_PARAMS_INCLUDE_H
 
+#include "../stdlib/acl_define.h"
+
+#ifndef ACL_CLIENT_ONLY
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-#include "../stdlib/acl_define.h"
 
 extern char *acl_var_threads_procname;
 extern char *acl_var_threads_log_file;
@@ -90,6 +92,14 @@ extern int   acl_var_threads_quick_abort;
 #define	ACL_DEF_THREADS_ENABLE_CORE		1
 extern int   acl_var_threads_enable_core;
 
+#define	ACL_VAR_THREADS_DISABLE_CORE_ONEXIT	"ioctl_disable_core_onexit"
+#define	ACL_DEF_THREADS_DISABLE_CORE_ONEXIT	1
+extern int   acl_var_threads_disable_core_onexit;
+
+#define ACL_VAR_THREADS_CORE_LIMIT		"ioctl_core_limit"
+#define ACL_DEF_THREADS_CORE_LIMIT		-1
+extern long long int acl_var_threads_core_limit;
+
 #define	ACL_VAR_THREADS_LOG_DEBUG		"master_debug"
 #define	ACL_DEF_THREADS_LOG_DEBUG		""
 extern char *acl_var_threads_log_debug;
@@ -142,4 +152,5 @@ extern char *acl_var_threads_dispatch_type;
 }
 #endif
 
+#endif /* ACL_CLIENT_ONLY */
 #endif

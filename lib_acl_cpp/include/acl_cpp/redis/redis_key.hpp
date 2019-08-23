@@ -4,6 +4,8 @@
 #include "../stdlib/string.hpp"
 #include "redis_command.hpp"
 
+#if !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
+
 namespace acl {
 
 class redis_client;
@@ -321,10 +323,10 @@ public:
 	 * rename a key only if the new key does not exist
 	 * @param key {const char*} 旧 key
 	 * @param newkey {const char*} 新 key
-	 * @return {bool} 是否成功
-	 *  true on success, false if the newkey already existed or error
+	 * @return {int} 返回值 > 0: 成功，0： 目标 key 存在，< 0：失败
+	 *  return value > 0 on success, < 0 on error, == 0 when newkey exists
 	 */
-	bool renamenx(const char* key, const char* newkey);
+	int renamenx(const char* key, const char* newkey);
 
 	/**
 	 * 反序列化给定的序列化值，并将它和给定的 key 关联
@@ -391,8 +393,9 @@ public:
 	 *  effective when not NULL
 	 * @return {int} 下一个游标位置，含义如下：
 	 *  return the next cursor value as follow:
-	 *   0：遍历结束
-	 *      iterating is finished
+	 *   0：遍历结束，当遍历结束时还需要检查 out 中的结果集是否为空，如果
+	 *      不为空，则需要继续进行处理
+	 *      iterating is finished and the out should be checked if emtpy
 	 *  -1: 出错
 	 *      some error happened
 	 *  >0: 游标的下一个位置，即使这样，具体有多少结果还需要检查 out，因为有可能为空
@@ -403,3 +406,5 @@ public:
 };
 
 } // namespace acl
+
+#endif // !defined(ACL_CLIENT_ONLY) && !defined(ACL_REDIS_DISABLE)
