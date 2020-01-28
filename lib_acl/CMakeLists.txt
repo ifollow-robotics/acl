@@ -104,7 +104,7 @@ if (${UNIX_OS})
 		"-W"
 		"-fPIC"
 		"-Wall"
-		"-Werror"
+		# "-Werror"
 		"-Wshadow"
 		"-Wpointer-arith"
 		"-Waggregate-return"
@@ -124,7 +124,7 @@ if (${UNIX_OS})
 			OUTPUT_VARIABLE GCC_VERSION)
 		string(REGEX MATCHALL "[0-9]+" GCC_VERSION_COMPONENTS ${GCC_VERSION})
 		list(GET GCC_VERSION_COMPONENTS 0 GCC_MAJOR)
-		list(GET GCC_VERSION_COMPONENTS 1 GCC_MINOR)
+		list(GET GCC_VERSION_COMPONENTS 0 GCC_MINOR)
 
 		if(CMAKE_VERSION GREATER "3.0")
 			if ((GCC_MAJOR GREATER_EQUAL 4) AND (GCC_MINOR GREATER_EQUAL 8))
